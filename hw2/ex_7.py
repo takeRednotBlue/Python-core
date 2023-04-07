@@ -12,12 +12,15 @@
 
 
 """
+
+is_working = True
+
 # function which returns least common  multiple 
 def lcm(a, b):
     # gcd - greatest common divisor 
     gcd = a if a < b else b 
-    loop_flag = True
-    while loop_flag:
+    global is_working
+    while is_working:
         if not a % gcd and not b % gcd:
             break
         gcd -= 1
@@ -25,7 +28,6 @@ def lcm(a, b):
     return abs(a * b) / gcd
 
 
-is_working = True
 while is_working:
     red_team_members = input("Enter red team members number: ")
     blue_team_members = input("Enter blue team members number: ")

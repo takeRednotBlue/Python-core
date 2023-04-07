@@ -11,7 +11,7 @@ result = ""
 digit = 0
 enter_number = True
 while enter_number:
-    num = input("Enter your number: ") # Enter 3 digit numbe
+    num = input("Enter your number: ") # Enter 3 digit number
     try:
         num = int(num)
         break

@@ -27,19 +27,47 @@ def main():
             print(f"You won! The number is {guess} and you guessed it from {count} try.")
             is_working = False
 
-def sub_main():
-    user_number = int(input("Enter your number: "))
+def starred_main():
     number_of_guesses =  10
     numbers_range = [i for i in range(1, 101)]
     computer_guess = sample(numbers_range, number_of_guesses)
-    for num in computer_guess:
-        print(f"I guess your number is: {num}")
-        confirmation = input("Is the number correct? Enter 'yes' or 'no': ")
-        if confirmation == "yes" or confirmation == "y":
-            print("I've never had any doubt about my superiority")
-            return
-        else:
-            continue
-    print("You won! Computer exceeded given number of guesses.")
-sub_main()
+    is_working = True
+            
+    while True:
+        user_number = input("Enter your number (1-100): ")        
+        try:
+            user_number = int(user_number)
+            if 1 <= user_number < 100:
+                break
+            else:
+                print("Your number not in range from 1 to 100.")
+        except ValueError:
+            print(f"Your must enter only number in range from 1 to 100. Try again.")
+
+
+    while is_working:
+        for num in computer_guess:
+            print(f"I guess your number is: {num}")        
+            while True:                
+                confirmation = input("Is the number correct? Enter 'yes' or 'no': ")
+                if confirmation.lower().startswith("y") and confirmation.lower().startswith("n"):
+                    break
+                else:
+                    print("Invalid answer. Try again.")  
+
+            if confirmation.lower().startswith("y") and num == user_number:
+                print("I've never had any doubt about my superiority")
+                is_working = False
+            elif confirmation.lower().startswith("n") and num == user_number:
+                print("You cannot foul me, I'm not an idiot. My superiority is undisputable!")
+                is_working = False
+            elif confirmation.lower().startswith("y") and num != user_number:
+                print("There is no need in flattery. Anyway I'm better and you know it.")
+                continue
+
+        is_working = False            
+        print("You won! Computer exceeded given number of guesses.")
+
+        
+starred_main()
         

@@ -1,34 +1,129 @@
-# my_list = [1, 1, 3, 4, 5, 5, 6, 6]
+from pathlib import Path
 
-# for el in my_list:
-#     if el == 5:
-#         my_list.remove(el)
+# path = Path.cwd() / "hw4" / "shopping_list.md"
+
+"""Two ways to open file and print only some specific lines"""
+
+# with path.open(mode="r", encoding="utf-8") as md_file:
+#     content = md_file.read()
+#     groceries = [line for line in content.splitlines() if line.startswith("*")]
+
+# content = path.read_text(encoding="utf-8")
+# groceries = [line for line in content.splitlines() if line.startswith("*")]
+
+# print("\n".join(groceries))
+
+"""You can specify paths directly as filenames, in which case they’re interpreted relative to the current working directory."""
+
+# content = Path("hw4\shopping_list.md").read_text(encoding="utf-8")
+# groceries = [line for line in content.splitlines() if line.startswith("*")]
+
+# Path("hw4\plain_list.md").write_text("\n".join(groceries), encoding="utf-8")
+
+# print("\n".join(groceries))
+
+"""
+Path doesn’t have a method to copy files. But we can create the same functionality with a few lines of code.
+We may also consider using 'shutil' library for copying files.
+"""
+
+# source = Path("shopping_list.md")
+# destination = source.with_stem("shopping_list_02")
+# destination.write_bytes(source.read_bytes())
+
+"""The way to move file excluding possibility for race condition"""
+
+# source = Path("hello.py")
+# destination = Path("goodbye.py") 
+
+# try:
+#     with source.open(mode="xb") as file:
+#         destination.write_bytes(source.read_bytes)
+# except FileExistsError:
+#     print(f"File {destination} exists already.")
+# else:
+#     source.unlink()
+ 
+
+"""Creating empty files.
+touch() method  is intended to update a file’s modification time but 
+in this example we use it's side effect.
+"""
+
+# filename = Path("hello.txt")
+# # rase an FileExistsError if file already exists
+# filename.touch(exist_ok=False) 
+
+"""
+To properly discard paths that are in a junk directory, you can check if any of the elements in the path match with any of the elements
+in a list of directories to skip. You can get all the elements in the path with the .parts attribute, which contains a tuple of all the 
+elements in the path. You can check if any two iterables have an item in common by taking advantage of sets. If you cast one of the 
+iterables to a set, then you can use the .isdisjoint() method to determine whether they have any elements in common.
+"""
+
+# SKIP_DIRS = ["temp", "temporary_files", "logs"]
+# large_dir = Path("large_dir")
+
+# for item in large_dir.rglob("*"):
+#     if set(item.parts).isdisjoint(SKIP_DIRS):
+#         print(item)
+
+# # Comprehension
+# item_list = [
+#     item
+#     for item in large_dir.rglob("*")
+#     if set(item.parts).isdisjoint(SKIP_DIRS)
+# ]
+
+# # With filter()
+# item_list = list(
+#     filter(
+#     lambda item: set(item.parts).isdisjoint(SKIP_DIRS),
+#     large_dir.rglob("*")
+#     )
+# )
+
+"""
+Recursive .iterdir() Function
+"""
+
+SKIP_DIRS = ["temp", "temporary_files", "logs"]
+
+def get_all_items(root: Path, exclude=SKIP_DIRS):
+    for item in root.iterdir():
+        if item.name in exclude:
+            continue
+        yield item
+        if item.is_dir():
+            yield from get_all_items(item)
+        # else:
+        #     yield item
+
+path = Path.cwd()
+
+# for item in get_all_items(path):
+#     print(item)
 
 
+"""
+Display a Directory Tree
+"""
 
-# # while 1 in my_list:
-# #     my_list.remove(1)
+def tree(directory: Path):
+    print(f"+ {directory}")
+    for path in get_all_items(directory):
+        depth = len(path.relative_to(directory).parts)
+        spacer =  "    " * depth
+        print(f"{spacer} + {path.name}")
 
-# print(my_list)
+# tree(path)
 
-file_formats = {
-    'Audio': ['.mp3', '.wav', '.aac', '.wma', '.ogg', '.flac', '.alac', '.aiff', '.ape', '.au', '.m4a', '.m4b', '.m4p', '.m4r', '.mid', '.midi', '.mpa', '.mpc', '.oga', '.opus', '.ra', '.ram', '.tta', '.weba'],
-    'Video': ['.mp4', '.avi', '.mkv', '.wmv', '.mov', '.flv', '.webm', '.m4v', '.mpg', '.mpeg', '.3gp', '.3g2', '.m2ts', '.mts', '.vob', '.ogv', '.mxf', '.divx', '.f4v', '.h264'],
-    'Images': ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff', '.svg', '.webp', '.eps', '.raw', '.cr2', '.nef', '.dng', '.orf', '.arw', '.pef', '.raf', '.sr2', '.kdc', '.mos', '.mrw', '.dcr', '.x3f', '.erf', '.mef', '.pcx'],
-    'Documents': ['.dot', '.odi', '.sxc', '.sxd', '.doc', '.txt', '.odf', '.sxw', '.odt', '.pdf', '.sxg', '.ott', '.odg', '.stw', '.sxi', '.stc', '.dotm', '.md', '.odc', '.docx', '.dotx', '.rtf'],
-    'Spreadsheets': ['.xls', '.xlsx', '.csv', '.xlsm', '.xlt', '.xltx', '.xlsb', '.numbers', '.ods'],
-    'Presentations': ['.ppt', '.pptx', '.key', '.odp', '.pps', '.ppsx', '.pot', '.potx', '.potm'],
-    'Archives': ['.zip', '.rar', '.tar.gz', '.7z', '.tar', '.tgz', '.bz2', '.dmg', '.iso', '.gz', '.jar', '.cab', '.z', '.tar.bz2', '.xz'],
-    'Programs': ['.exe', '.apk', '.app', '.msi', '.deb', '.rpm', '.bat', '.sh', '.com', '.gadget', '.vb', '.vbs', '.wsf'],
-    'Code': ['.py', '.java', '.js', '.html', '.css', '.cpp', '.c', '.php', '.xml', '.rb', '.pl', '.swift', '.h', '.hpp', '.cs', '.m', '.mm', '.kt', '.dart', '.go', '.lua', '.r', '.ps1'],
-    'Database': ['.sql', '.db', '.mdb', '.accdb', '.sqlitedb', '.dbf', '.dbs', '.myd', '.frm', '.sqlite'],
-    'ebook': ['.epub', '.azw', '.azw3', '.fb2', '.ibooks', '.lit', '.mobi', '.pdb']
-}
+"""
+Finding the Most Recently Modified File
+"""
 
+from datetime import datetime
 
-Documents = ['.pdf', '.doc', '.docx', '.txt', '.rtf', '.odt', '.md', '.ppt', '.pptx', '.xls', '.xlsx', '.csv', '.odp', '.ott', '.xlsb', '.xlsm', '.xltx', '.dot', '.dotx', '.dotm', '.pps', '.ppsx', '.pot', '.potx', '.potm', '.odc', '.odf', '.odg', '.odi', '.ods', '.stw', '.sxw', '.stc', '.sxc', '.sxd', '.sxi', '.sxg']
-Spreadsheets = ['.xls', '.xlsx', '.csv', '.xlsm', '.xlt', '.xltx', '.xlsb', '.numbers', '.ods']
-Presentations = ['.ppt', '.pptx', '.key', '.odp', '.pps', '.ppsx', '.pot', '.potx', '.potm']
-
-edited = set(Documents) - set(Spreadsheets) - set(Presentations)
-print(file_formats['Audio'])
+directory = Path.cwd()
+time, file_path = max((f.stat().st_mtime, f) for f in directory.iterdir())
+print(datetime.fromtimestamp(time), file_path)

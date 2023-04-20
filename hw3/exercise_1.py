@@ -15,13 +15,23 @@ def number_and_stars(number):
 
 def with_recursion(number):
     if number == 0:
-        return
+        return None
     if number == 1:
         return print("1 *")
     else:
         print(number, "*"*number)
     with_recursion(number - 2)
 
+def star_tree_recursion(n):
+    if n < 1:
+        return None
+    else:
+        print(str(n) + ' ' + "*" * int(n))
+        return star_tree_recursion(n - 2)
 
-number_and_stars(5)
-with_recursion(51)
+
+n = int(input("How many stars:"))
+star_tree_recursion(n)
+
+# number_and_stars(5)
+# with_recursion(51)

@@ -50,7 +50,7 @@ def starred_main():
             print(f"I guess your number is: {num}")        
             while True:                
                 confirmation = input("Is the number correct? Enter 'yes' or 'no': ")
-                if confirmation.lower().startswith("y") and confirmation.lower().startswith("n"):
+                if confirmation.lower().startswith("y") or confirmation.lower().startswith("n"):
                     break
                 else:
                     print("Invalid answer. Try again.")  
@@ -64,9 +64,9 @@ def starred_main():
             elif confirmation.lower().startswith("y") and num != user_number:
                 print("There is no need in flattery. Anyway I'm better and you know it.")
                 continue
-
-        is_working = False            
-        print("You won! Computer exceeded given number of guesses.")
+        else:
+            is_working = False            
+            print("You won! Computer exceeded given number of guesses.")
 
         
 starred_main()

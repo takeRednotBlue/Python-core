@@ -38,10 +38,11 @@ def custom_sort_into_dir(files: list):
 
 donwloads = Path(r"C:\Users\maxym\OneDrive\Робочий стіл\Download")
 files = [file for file in donwloads.iterdir() if file.is_file()]
+
 # Finds all file formats in the dir
-# suffixes = set()
-# for file in files:
-#     suffixes.add(file.suffix)
+suffixes = set()
+for file in files:
+    suffixes.add(file.suffix)
 
 
 # print(suffixes)
@@ -51,13 +52,15 @@ doc = Path(r"C:\Users\maxym\OneDrive\Робочий стіл\Download\Documents"
 files_doc = [file for file in doc.iterdir() if file.is_file()]
 
 
+# Determine whether text contain Ukrainian letters
 def contain_ukr_letters(text):
     ukrainian_pattern = re.compile('[А-ЩЬЮЯЄІЇҐа-щьюяєіїґ]')
     if ukrainian_pattern.search(text):
         return True
     else:
         False
-        
-for file in files_doc:
-    if contain_ukr_letters(file.name):
-        file.unlink()
+ 
+# Delete all file that has Ukrainian letters in it's name       
+# for file in files_doc:
+#     if contain_ukr_letters(file.name):
+#         file.unlink()

@@ -40,10 +40,38 @@ def create_deck() -> list:
             cards_deck.append(card + suit)
     return cards_deck
 
+def sort_hand(hand: list):
+    cards = {
+        "2": 2, 
+        "3": 3, 
+        "4": 4, 
+        "5": 5, 
+        "6": 6, 
+        "7": 7, 
+        "8": 8, 
+        "9": 9, 
+        "10": 10, 
+        "J": 11, 
+        "Q": 12, 
+        "K": 13,
+        "A": 14,
+        }
+    return hand.sort(key=lambda x: cards[x[:-1]])
+
+
 def main ():
+    if len(sys.argv) <= 1:
+        # players_num = input("Enter number of players: ")
+        # cards_per_player = input("Enter number of cards for each player: ")
+        players_num = 7
+        cards_per_player = 7
+    else:
+        players_num = sys.argv[1]
+        cards_per_player = sys.argv[2]
+
     try:
-        players_num = int(sys.argv[1])
-        cards_per_player = int(sys.argv[2])
+        players_num = int(players_num)
+        cards_per_player = int(cards_per_player)
     except ValueError:
         print("Invalid arguments. Integers are expected.")
     else:
@@ -52,7 +80,7 @@ def main ():
         
         if players_num * cards_per_player <= len(deck):
             # Creates players dictionary to store hands values
-            players = [f"Player №{num}" for num in range(1, players_num + 1)]
+            players = [f"Player №{player}" for player in range(1, players_num + 1)]
             hands = [list() for _ in range(players_num)]
             players_dic = dict(zip(players, hands))
             
@@ -63,14 +91,15 @@ def main ():
             
             # Prints which hand each player has
             for player, hand in players_dic.items():
-                print("{} has {}".format(player, hand))
+                sort_hand(hand)
+                print('{:15}|'.format(player + " has"), end='')
+                for card in hand:
+                    print('{:^4}'.format(card), end='')
+                print('|')
+
         else:
             print(f"There is not enough cards for all players.")
         
 
 if __name__ == "__main__":
     main()
-
-
-
-

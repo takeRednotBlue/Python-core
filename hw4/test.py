@@ -13,7 +13,8 @@ from pathlib import Path
 
 # print("\n".join(groceries))
 
-"""You can specify paths directly as filenames, in which case they’re interpreted relative to the current working directory."""
+"""You can specify paths directly as filenames, in which case they’re 
+interpreted relative to the current working directory."""
 
 # content = Path("hw4\shopping_list.md").read_text(encoding="utf-8")
 # groceries = [line for line in content.splitlines() if line.startswith("*")]
@@ -55,9 +56,10 @@ in this example we use it's side effect.
 # filename.touch(exist_ok=False) 
 
 """
-To properly discard paths that are in a junk directory, you can check if any of the elements in the path match with any of the elements
-in a list of directories to skip. You can get all the elements in the path with the .parts attribute, which contains a tuple of all the 
-elements in the path. You can check if any two iterables have an item in common by taking advantage of sets. If you cast one of the 
+To properly discard paths that are in a junk directory, you can check if any of the elements in the 
+path match with any of the elements in a list of directories to skip. You can get all the elements 
+in the path with the .parts attribute, which contains a tuple of all the elements in the path. 
+You can check if any two iterables have an item in common by taking advantage of sets. If you cast one of the 
 iterables to a set, then you can use the .isdisjoint() method to determine whether they have any elements in common.
 """
 

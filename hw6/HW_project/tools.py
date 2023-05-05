@@ -87,14 +87,21 @@ def normalize(path: str) -> int:
     for file in files:
         pattern = r"\W"
         new_stem = re.sub(pattern, "_", translitterate(file.stem))
-        try:
-            file.rename(file.parent / "".join([new_stem, file.suffix]))
+        new_name = f"{new_stem}{file.suffix}"
+        # new_name = new_stem
+        new_path = file.with_stem(new_stem)
+        if file.name != new_path.name:
+            if new_path.exists():
+                suffix = 1
+                while True:
+                    new_name = f"{new_stem}_{suffix}{file.suffix}"
+                    new_path = file.with_name(new_name)
+                    if not new_path.exists():
+                        break
+            
             count_normalized_files += 1
-        except FileExistsError:
-            count_list.append(file.name)
-            changed_stem = new_stem + "_1"
-            file.rename(file.parent / "".join([changed_stem, file.suffix]))
-            count_normalized_files += 1
+            count_list.append((file, new_path))
+            file.rename(new_path)
     return count_list, count_normalized_files
 
             
@@ -127,22 +134,41 @@ def remove_empty_dirs(path: str) -> int:
             count_removed_dirs += 1
     return count_removed_dirs 
 
+# def move_to_folder(file: Path, destPath: Path):
+#     '''Moves file and when FilesExistsError is raised recursively changes file stem 
+#     till exception resolved'''
+#     exception_counter = 1
+#     def error_handler():
+#         nonlocal exception_counter
+#         try:
+#             changed_stem = file.stem + f"_{exception_counter}"
+#             file.rename(destPath / "".join([changed_stem, file.suffix]))
+#         except FileExistsError:
+#             exception_counter += 1
+#             error_handler()
+#     try:
+#         file.rename(destPath / file.name)
+#     except FileExistsError:
+#         error_handler()
+
 def move_to_folder(file: Path, destPath: Path):
-    '''Moves file and when FilesExistsError is raised recursively changes file stem 
-    till exception resolved'''
-    exception_counter = 1
-    def error_handler():
-        nonlocal exception_counter
-        try:
-            changed_stem = file.stem + f"_{exception_counter}"
-            file.rename(destPath / "".join([changed_stem, file.suffix]))
-        except FileExistsError:
-            exception_counter += 1
-            error_handler()
-    try:
-        file.rename(destPath / file.name)
-    except FileExistsError:
-        error_handler()
+    """Moves file to the given destination folder.
+    If a file with the same name already exists in the destination folder, appends a suffix to the file name
+    until a unique name is found."""
+    
+    max_attempts = 100
+    suffix = 1
+    
+    dest_file_path = destPath / file.name
+    
+    while dest_file_path.exists() and suffix <= max_attempts:
+        suffix += 1
+        dest_file_path = destPath / f"{file.stem}_{suffix}{file.suffix}"
+    
+    if suffix > max_attempts:
+        raise Exception("Could not move file, maximum number of attempts reached")
+    
+    file.rename(dest_file_path)
             
     
 def sort_dir(path: str, unpackArch=True) -> None:

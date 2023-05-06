@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 import shutil
 
@@ -77,19 +78,23 @@ def translitterate(text: str) -> str:
     new_text = text.translate(trans_dict)
     return new_text
 
-def normalize(path: str) -> int:
-    '''Transliterate from cyrillic stem of the file and replace symbols
-    other than latin letters and numbeіr with "_". The result is renamed Paths of the files'''
-    count_list = []
+
+def normalize(path: str) -> tuple:
+    '''Transliterates from cyrillic stem of the file and replace symbols
+    other than latin letters and numbeіr with "_". The result is renamed Paths of the files.
+    Returns tuple which contain list with pairs of paths before and after normalization and integer
+    number of normalized files'''
+    log_list = []
     count_normalized_files = 0
-    path_object = Path(path)
-    files = [file for file in get_all_items(path_object)]
+
+    path = Path(path)
+    files = [file for file in get_all_items(path)]
+
     for file in files:
         pattern = r"\W"
         new_stem = re.sub(pattern, "_", translitterate(file.stem))
-        new_name = f"{new_stem}{file.suffix}"
-        # new_name = new_stem
         new_path = file.with_stem(new_stem)
+
         if file.name != new_path.name:
             if new_path.exists():
                 suffix = 1
@@ -100,9 +105,10 @@ def normalize(path: str) -> int:
                         break
             
             count_normalized_files += 1
-            count_list.append((file, new_path))
+            log_list.append((file, new_path))
             file.rename(new_path)
-    return count_list, count_normalized_files
+
+    return log_list, count_normalized_files
 
             
 
@@ -123,38 +129,25 @@ def get_all_items(path: Path):
                 yield item
 
 count_removed_dirs = 0
-def remove_empty_dirs(path: str) -> int:
-    """Deletes empty dirs recursively"""
+def remove_empty_dirs(path: str|Path) -> int:
+    """Deletes empty dirs recursively. Returns integer number of removed dirs."""
     global count_removed_dirs
+
     for root, dirs, files in os.walk(path, topdown=False):
         for dir in dirs:
             remove_empty_dirs(os.path.join(root, dir))
         if not dirs and not files:
             os.rmdir(root) # os.rmdir() removes only if dir is empty
             count_removed_dirs += 1
+
     return count_removed_dirs 
 
-# def move_to_folder(file: Path, destPath: Path):
-#     '''Moves file and when FilesExistsError is raised recursively changes file stem 
-#     till exception resolved'''
-#     exception_counter = 1
-#     def error_handler():
-#         nonlocal exception_counter
-#         try:
-#             changed_stem = file.stem + f"_{exception_counter}"
-#             file.rename(destPath / "".join([changed_stem, file.suffix]))
-#         except FileExistsError:
-#             exception_counter += 1
-#             error_handler()
-#     try:
-#         file.rename(destPath / file.name)
-#     except FileExistsError:
-#         error_handler()
 
-def move_to_folder(file: Path, destPath: Path):
+
+def move_to_folder(file: Path, destPath: Path) -> Path:
     """Moves file to the given destination folder.
-    If a file with the same name already exists in the destination folder, appends a suffix to the file name
-    until a unique name is found."""
+    If a file with the same name already exists in the destination folder, appends 
+    a suffix to the file name until a unique name is found. Returns new path of the file."""
     
     max_attempts = 100
     suffix = 1
@@ -169,12 +162,13 @@ def move_to_folder(file: Path, destPath: Path):
         raise Exception("Could not move file, maximum number of attempts reached")
     
     file.rename(dest_file_path)
-            
+    return dest_file_path            
     
-def sort_dir(path: str, unpackArch=True) -> None:
-    path_object = Path(path)
-    files = [file for file in get_all_items(path_object)]
-
+def sort_dir(path: str|Path, unpackArch=True) -> tuple:
+    '''Take files from the given path and move them acording to the suffix into the respective dir. Unpacks
+    archives with suffixes ".zip", ".tar", ".gztar", ".bztar", ".xztar" if else not given. Returns tuple 
+    which contains list with pairs of paths before and after sorting and integer number of unpacked archives.
+    '''
     file_formats = {
     'Audio': ['.mp3', '.wav', '.aac', '.wma', '.ogg', '.flac', '.alac', '.aiff', '.ape', '.au', '.m4a', '.m4b', '.m4p', '.m4r', '.mid', '.midi', '.mpa', '.mpc', '.oga', '.opus', '.ra', '.ram', '.tta', '.weba'],
     'Video': ['.mp4', '.avi', '.mkv', '.wmv', '.mov', '.flv', '.webm', '.m4v', '.mpg', '.mpeg', '.3gp', '.3g2', '.m2ts', '.mts', '.vob', '.ogv', '.mxf', '.divx', '.f4v', '.h264'],
@@ -188,64 +182,119 @@ def sort_dir(path: str, unpackArch=True) -> None:
     'Database': ['.sql', '.db', '.mdb', '.accdb', '.sqlitedb', '.dbf', '.dbs', '.myd', '.frm', '.sqlite'],
     'Ebook': ['.epub', '.azw', '.azw3', '.fb2', '.ibooks', '.lit', '.mobi', '.pdb']
     }
+    log_list = []
+    unpack_counter = 0
+    path = Path(path)
+    files = [file for file in get_all_items(path)]
 
     for file in files:
         for categ, formats in file_formats.items():
             if file.suffix.lower() in formats:
+                
                 if categ == "Archives" and unpackArch == True and file.suffix in {".zip", ".tar", ".gztar", ".bztar", ".xztar"}:
-                    dest_to_unpack = new_dir(path_object, categ)
+                    if file.stem == path.name + "_backup":
+                        break
+                    dest_to_unpack = new_dir(path, categ)
                     unpack_arch_and_remove(file, dest_to_unpack)
+                    unpack_counter += 1
                     break
                 else:
-                    move_to_folder(file, new_dir(path_object, categ))
+                    dest_dir = new_dir(path, categ)
+                    new_file_path = move_to_folder(file, dest_dir)
+                    log_list.append((file, new_file_path))
                     break
+        
         else:
-            move_to_folder(file, new_dir(path_object, "Unknown"))
+            dest_dir = new_dir(path, "Unknown")
+            new_file_path = move_to_folder(file, dest_dir)
+            log_list.append((file, new_file_path))
+
+    return log_list, unpack_counter
            
 
 
 def dirs_info(path):
-    print("-"*33)
-    print("|{:^15}|{:^7}|{:^7}|".format("Dir name", "Files", "Subdirs"))
-    print("-"*33)
+    # path = Path(path)
+    files_count = 0
+    dirs_count = 0
+    suffixes_count = 0
+    print("-"*117)
+    print("|{:^15}|{:^7}|{:^7}|{:^83}|".format("Dir name", "Files", "Subdirs", "Suffixes"))
+    print("-"*117)
+
     for root, dirs, files in os.walk(path):
-        root_path_obj = Path(root)
-        if str(root_path_obj.parent) == path:
-            print(f'|{Path(root).name:<15}|{len(files):^7}|{len(dirs):^7}|')
+        root = Path(root)
+        if root.parent == path:
+            suffixes = list(set([Path(file).suffix.lower() for file in files]))
+            print('|{:<15}|{:^7}|{:^7}|{:<83}|'.format(root.name, len(files), len(dirs), ", ".join(suffixes)))
+            files_count += len(files)
+            dirs_count += len(dirs)
+            suffixes_count += len(suffixes)
         else: 
             continue
-    print("-"*33)
-    # path_object = Path(path)
-    # dirs_count = 0
-    # files_count = 0
-    # for item in path_object.rglob("*"):
-    #     if item.is_dir():
-    #         dirs_count += 1
-    #     else:
-    #         files_count += 1
-    # return files_count, dirs_count
 
-def make_report(destPath: str):
+    print("-"*117)
+    print(f'|{"Total:":<15}|{files_count:^7}|{dirs_count:^7}|{suffixes_count:^83}|')
+    print("-"*117)
+
+def dir_info(path):
+    
+    path = Path(path)
+    items = [item for item in path.rglob("*")]
+    files_amount = len([file for file in items if file.is_file()])
+    dirs_amount = len([dir for dir in items if dir.is_dir()])
+    suffixes = list(set([item.suffix.lower() for item in items]))
+
+    return files_amount, dirs_amount, suffixes
+
+def make_report(destPath: str|Path, backup):
     '''Writes report into a file'''
     # if destPath is str:
     destPath = Path(destPath)
+    files_count = 0
+    dirs_count = 0
+    suffixes_count = 0
+
     with open(destPath / "report.txt", 'w') as rep:
-        rep.write("-"*33+"\n")
-        rep.write("|{:^15}|{:^7}|{:^7}|\n".format("Dir name", "Files", "Subdirs"))
-        rep.write("-"*33+"\n")
+        time = datetime.now().isoformat(sep=' ', timespec='seconds')
+        rep.write(
+f'''
+Time of sorting: {time}
+Backup: {backup}
+Path: {destPath}\n\n\n
+''')
+        rep.write("-"*117+"\n")
+        rep.write("|{:^15}|{:^7}|{:^7}|{:^83}|\n".format("Dir name", "Files", "Subdirs", "Suffixes",))
+        rep.write("-"*117+"\n")
+
         for root, dirs, files in os.walk(destPath):
-            root_path_obj = Path(root)
-            if root_path_obj.parent == destPath:
-                rep.write(f'|{Path(root).name:<15}|{len(files):^7}|{len(dirs):^7}|\n')
+            root = Path(root)
+            if root.parent == destPath:
+                suffixes = list(set([Path(file).suffix.lower() for file in files]))
+                rep.write('|{:<15}|{:^7}|{:^7}|{:<83}|\n'.format(root.name, len(files), len(dirs), ", ".join(suffixes)))
+                files_count += len(files)
+                dirs_count += len(dirs)
+                suffixes_count += len(suffixes)
             else: 
                 continue
-        rep.write("-"*33+"\n")
+
+        rep.write("-"*117+"\n")
+        rep.write(f'|{"Total:":<15}|{files_count:^7}|{dirs_count:^7}|{suffixes_count:^83}|\n')
+        rep.write("-"*117+"\n")
 
 
 def unpack_arch_and_remove(file: Path, dest: Path):
+    '''Unpacks archive to the given dir and removes it after.'''
     destDir = dest / file.stem
     shutil.unpack_archive(file, destDir)
     file.unlink()
 
+def create_backup_copy(path: str|Path):
+    '''Makes achive and moves it inside given path as backup before sorting.'''
+    path = Path(path)
+    archive_name = path.parent / f"{path.name}_backup"
+    shutil.make_archive(archive_name, 'zip', path)
+    back_up_path = archive_name.with_suffix(".zip")
+    back_up_path.rename(path / f"{archive_name.name}.zip")
 
 

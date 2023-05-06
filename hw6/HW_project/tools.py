@@ -86,6 +86,8 @@ def normalize(path: str) -> tuple:
     number of normalized files'''
     log_list = []
     count_normalized_files = 0
+    max_attempts = 100
+    suffix = 1
 
     path = Path(path)
     files = [file for file in get_all_items(path)]
@@ -94,16 +96,17 @@ def normalize(path: str) -> tuple:
         pattern = r"\W"
         new_stem = re.sub(pattern, "_", translitterate(file.stem))
         new_path = file.with_stem(new_stem)
-
+        
         if file.name != new_path.name:
-            if new_path.exists():
-                suffix = 1
-                while True:
-                    new_name = f"{new_stem}_{suffix}{file.suffix}"
-                    new_path = file.with_name(new_name)
-                    if not new_path.exists():
-                        break
-            
+            # Handles cases when file exists in order not to rewrite it
+            while new_path.exists() and suffix <= max_attempts:
+                new_name = f"{new_stem}_{suffix}{file.suffix}"
+                new_path = file.with_name(new_name)
+                suffix += 1
+                
+            if suffix > max_attempts:
+                raise Exception("Could not move file, maximum number of attempts reached")
+                       
             count_normalized_files += 1
             log_list.append((file, new_path))
             file.rename(new_path)
@@ -121,7 +124,7 @@ def new_dir(path: Path, newDirName: str) -> Path:
     return newDir
 
 def get_all_items(path: Path):
-        '''Generator that yields items recursively fro dirs and subdirs'''
+        '''Generator that yields items recursively from dirs and subdirs'''
         for item in path.iterdir():
             if item.is_dir():
                 yield from get_all_items(item)
@@ -153,7 +156,7 @@ def move_to_folder(file: Path, destPath: Path) -> Path:
     suffix = 1
     
     dest_file_path = destPath / file.name
-    
+    # Handles cases when file exist in order not to rewrite it
     while dest_file_path.exists() and suffix <= max_attempts:
         suffix += 1
         dest_file_path = destPath / f"{file.stem}_{suffix}{file.suffix}"
@@ -182,6 +185,7 @@ def sort_dir(path: str|Path, unpackArch=True) -> tuple:
     'Database': ['.sql', '.db', '.mdb', '.accdb', '.sqlitedb', '.dbf', '.dbs', '.myd', '.frm', '.sqlite'],
     'Ebook': ['.epub', '.azw', '.azw3', '.fb2', '.ibooks', '.lit', '.mobi', '.pdb']
     }
+
     log_list = []
     unpack_counter = 0
     path = Path(path)
@@ -190,8 +194,9 @@ def sort_dir(path: str|Path, unpackArch=True) -> tuple:
     for file in files:
         for categ, formats in file_formats.items():
             if file.suffix.lower() in formats:
-                
+
                 if categ == "Archives" and unpackArch == True and file.suffix in {".zip", ".tar", ".gztar", ".bztar", ".xztar"}:
+                    # Avoid backup archive if such was made
                     if file.stem == path.name + "_backup":
                         break
                     dest_to_unpack = new_dir(path, categ)
@@ -214,19 +219,34 @@ def sort_dir(path: str|Path, unpackArch=True) -> tuple:
 
 
 def dirs_info(path):
-    # path = Path(path)
+    '''Output result of the script into terminal in table format'''
+    path = Path(path)
     files_count = 0
     dirs_count = 0
     suffixes_count = 0
+
     print("-"*117)
     print("|{:^15}|{:^7}|{:^7}|{:^83}|".format("Dir name", "Files", "Subdirs", "Suffixes"))
     print("-"*117)
 
     for root, dirs, files in os.walk(path):
         root = Path(root)
+        # Display info of only sorted in dirs
         if root.parent == path:
             suffixes = list(set([Path(file).suffix.lower() for file in files]))
-            print('|{:<15}|{:^7}|{:^7}|{:<83}|'.format(root.name, len(files), len(dirs), ", ".join(suffixes)))
+            suffixes_str = ", ".join(map(repr, suffixes))
+            # Handles display of suffixes when not enough space in one row of the table
+            if len(suffixes_str) > 83:
+                suffixes_line = suffixes_str[:83]
+                print('|{:<15}|{:^7}|{:^7}|{:<83}|'.format(root.name, len(files), len(dirs), suffixes_line))
+                n = 83
+                while len(suffixes_line) > 82:
+                    suffixes_line = suffixes_str[n:n+83]
+                    print('|{_:<15}|{_:^7}|{_:^7}|{suf:<83}|'.format(_='', suf=suffixes_line))
+                    n += 83
+            else:
+                print('|{:<15}|{:^7}|{:^7}|{:<83}|'.format(root.name, len(files), len(dirs), suffixes_str))
+
             files_count += len(files)
             dirs_count += len(dirs)
             suffixes_count += len(suffixes)
@@ -237,15 +257,15 @@ def dirs_info(path):
     print(f'|{"Total:":<15}|{files_count:^7}|{dirs_count:^7}|{suffixes_count:^83}|')
     print("-"*117)
 
-def dir_info(path):
+def files_amount(path):
     
     path = Path(path)
     items = [item for item in path.rglob("*")]
     files_amount = len([file for file in items if file.is_file()])
-    dirs_amount = len([dir for dir in items if dir.is_dir()])
-    suffixes = list(set([item.suffix.lower() for item in items]))
-
-    return files_amount, dirs_amount, suffixes
+    # dirs_amount = len([dir for dir in items if dir.is_dir()])
+    # suffixes = list(set([item.suffix.lower() for item in items]))
+    # return files_amount, dirs_amount, suffixes
+    return files_amount
 
 def make_report(destPath: str|Path, backup):
     '''Writes report into a file'''
@@ -259,19 +279,32 @@ def make_report(destPath: str|Path, backup):
         time = datetime.now().isoformat(sep=' ', timespec='seconds')
         rep.write(
 f'''
-Time of sorting: {time}
+\rTime of sorting: {time}
 Backup: {backup}
-Path: {destPath}\n\n\n
+Path: {destPath}\n\n
 ''')
         rep.write("-"*117+"\n")
         rep.write("|{:^15}|{:^7}|{:^7}|{:^83}|\n".format("Dir name", "Files", "Subdirs", "Suffixes",))
         rep.write("-"*117+"\n")
-
+        
         for root, dirs, files in os.walk(destPath):
             root = Path(root)
+            # Displays only sorted in dirs
             if root.parent == destPath:
                 suffixes = list(set([Path(file).suffix.lower() for file in files]))
-                rep.write('|{:<15}|{:^7}|{:^7}|{:<83}|\n'.format(root.name, len(files), len(dirs), ", ".join(suffixes)))
+                suffixes_str = ", ".join(map(repr, suffixes))
+                # Handles display of suffixes when not enough space in one row of the table
+                if len(suffixes_str) > 83:
+                    suffixes_line = suffixes_str[:83]
+                    rep.write('|{:<15}|{:^7}|{:^7}|{:<83}|\n'.format(root.name, len(files), len(dirs), suffixes_line))
+                    n = 83
+                    while len(suffixes_line) > 82:
+                        suffixes_line = suffixes_str[n:n+83]
+                        rep.write('|{_:<15}|{_:^7}|{_:^7}|{suf:<83}|\n'.format(_='', suf=suffixes_line))
+                        n += 83
+                else:
+                    rep.write('|{:<15}|{:^7}|{:^7}|{:<83}|\n'.format(root.name, len(files), len(dirs), suffixes_str))
+
                 files_count += len(files)
                 dirs_count += len(dirs)
                 suffixes_count += len(suffixes)

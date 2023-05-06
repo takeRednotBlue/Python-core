@@ -3,13 +3,13 @@
 Ім'я файлу для читання передаємо як аргумент командного рядка
 '''
 
-import sys
+# import sys
 
-NUM_LINES = 4
+# NUM_LINES = 4
 
-if len(sys.argv) != 2:
-    print("Please pass only 2 args!")
-    quit()
+# if len(sys.argv) != 2:
+#     print("Please pass only 2 args!")
+#     quit()
 
 # try:
 #     with open(sys.argv[1]) as file:
@@ -41,9 +41,16 @@ if len(sys.argv) != 2:
 Читаємо файл за допомогою pathlib
 '''
 
-from pathlib import Path
-folder = Path(".")
-file = folder / 'ibm.drawio.svg'
+# from pathlib import Path
+# folder = Path(".")
+# file = folder / 'ibm.drawio.svg'
 
-print(file.name.split(".")[1]) # If file has more than one format
-print(file.suffixes) # Return list of file's suffixes
+# print(file.name.split(".")[1]) # If file has more than one format
+# print(file.suffixes) # Return list of file's suffixes
+str = ', .ncx, .jks, .m3u, .vcf, .p7s, .mmbak, .apkg, .rels, .htm, .rdf, .djvu, .opf'
+list = str.split(", ")
+print(list)
+num = len( ", ".join(map(repr, list)))
+num_2 = len(', '.join(list))
+print(num)
+print(num_2)

@@ -31,24 +31,26 @@ def main(path, backup=False):
     '''Main logic. Results of the sript work assign to variables
     for future reporting'''
     
-    files_num_init, dirs_num_init, suffixes_init = dir_info(path)
+    files_num_init = files_amount(path)
     normalized_log, normalized_files = normalize(path)
     sort_log, unpacked_archs_count = sort_dir(path)
     removed_dirs = remove_empty_dirs(path)
     # files_num_final, dirs_num_final, suffixes_final = dir_info(path)
     
+    '''Shows results of script work in terminal'''
+
     dirs_info(path)
-    make_report(path, backup)
     print(f'''
 {'Amount of sorted files:':<30} {files_num_init}
 {'Normalized files:':<30} {normalized_files}
 {'Unpacked archives:':<30} {unpacked_archs_count}
 {'Removed empty directories:':<30} {removed_dirs}
-{"Directory's file suffixes:":<30} 
-{', '.join(map(repr, suffixes_init))}
 ''')
 
+    '''Creates two file. First one contains results of the script work
+     and sorting log. Second contains log of normalized files.'''
 
+    make_report(path, backup)
     with open(path / 'report.txt', 'a', encoding="utf-8") as rep:
         rep.write(
 f'''
@@ -56,8 +58,6 @@ f'''
 {'Normalized files:':<30} {normalized_files}
 {'Unpacked archives:':<30} {unpacked_archs_count}
 {'Removed empty directories:':<30} {removed_dirs}
-{"Directory's file suffixes:"} 
-{', '.join(map(repr, suffixes_init))}
 '''
         )
         rep.write("\nSort log:\n")

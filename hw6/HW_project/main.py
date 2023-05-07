@@ -1,43 +1,30 @@
 """
-
-1. Має бути окрема функція для обробки папок яка викликається рекурсивно (можна використати glob? 
-або краще iterdir())
-2. Функція має повертати список файлів в кожній категорії, перелік всіх розширень з папки, перелік всіх відомих розширень.
-3. Потрібно додати функції, які будуть відповідати за обробку кожного типу файлу.
-4. Переіменувати папки/файли через функцію normalize() (транслітерація, всі інші символи "_") 
-Приймає радок та повертає рядок, великі залишаються великими. 
-5. Видаляти порожні папки
-6. Скрипт ігнорує папки з сортованими файлами.
-7. Архіви розпакувати в папку з назвою архіву
-
-Додатково:
-1. Створити резервну копію файлів у вигляді архіву та запитувати про її створення при виклику скрипта.
-2. Створювати файл звіту. Прописати його зміст та структуру.
-3. Створити файл Readme з описом роботи скрипта.
-4. Вивести необхідну інформацію на екран по завершенню роботи скрипта.
-5. Оптимізувати написаний код.
-
-
+1. Скрипт приймає один аргумент при запуску це шлях до папки для сортування.
+2. Також за бажанням можна прописати другим аргументом "backup", що вкаже скрипту
+перед сортування заархівувати папку яку буде сортовано на помістити цей архів в середину.
+3. Результати роботи скрипту виводяться в термінал, а також створююється два текстові файли 
+один з яким містить туж інформацію що і виведено до терміналу, а також лог* сортування.
+Другий містить в собі лог* нормалізації.
+* Мається на увазі список шляхів до сортування/нормалізації та після.
 """
+
 import sys
-from datetime import datetime
 from tools import *
+from pathlib import Path
 
 def main(path, backup=False):
     path = Path(path)
     if backup == True: 
         create_backup_copy(path)
 
-    '''Main logic. Results of the sript work assign to variables
-    for future reporting'''
+    # Main logic. Results of the functions assign to variables for future reporting
     
     files_num_init = files_amount(path)
     normalized_log, normalized_files = normalize(path)
     sort_log, unpacked_archs_count = sort_dir(path)
     removed_dirs = remove_empty_dirs(path)
-    # files_num_final, dirs_num_final, suffixes_final = dir_info(path)
     
-    '''Shows results of script work in terminal'''
+    # Shows results of script in terminal
 
     dirs_info(path)
     print(f'''
@@ -47,8 +34,8 @@ def main(path, backup=False):
 {'Removed empty directories:':<30} {removed_dirs}
 ''')
 
-    '''Creates two file. First one contains results of the script work
-     and sorting log. Second contains log of normalized files.'''
+    # Creates two file. First one contains results of the script work and sorting log. 
+    # Second contains log of normalized files.
 
     make_report(path, backup)
     with open(path / 'report.txt', 'a', encoding="utf-8") as rep:

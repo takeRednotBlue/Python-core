@@ -278,8 +278,8 @@ def make_report(destPath: str|Path, backup):
     with open(destPath / "report.txt", 'w') as rep:
         time = datetime.now().isoformat(sep=' ', timespec='seconds')
         rep.write(
-f'''
-\rTime of sorting: {time}
+f'''\r
+Time of sorting: {time}
 Backup: {backup}
 Path: {destPath}\n\n
 ''')

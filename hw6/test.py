@@ -3,6 +3,7 @@
 Ім'я файлу для читання передаємо як аргумент командного рядка
 '''
 
+<<<<<<< HEAD
 # import sys
 
 # NUM_LINES = 4
@@ -10,6 +11,15 @@
 # if len(sys.argv) != 2:
 #     print("Please pass only 2 args!")
 #     quit()
+=======
+import sys
+
+NUM_LINES = 4
+
+if len(sys.argv) != 2:
+    print("Please pass only 2 args!")
+    quit()
+>>>>>>> cbbea46da5faa5421a71f2bd5182dbd3b9844bee
 
 # try:
 #     with open(sys.argv[1]) as file:
@@ -41,6 +51,7 @@
 Читаємо файл за допомогою pathlib
 '''
 
+<<<<<<< HEAD
 # from pathlib import Path
 # folder = Path(".")
 # file = folder / 'ibm.drawio.svg'
@@ -54,3 +65,11 @@ num = len( ", ".join(map(repr, list)))
 num_2 = len(', '.join(list))
 print(num)
 print(num_2)
+=======
+from pathlib import Path
+folder = Path(".")
+file = folder / 'ibm.drawio.svg'
+
+print(file.name.split(".")[1]) # If file has more than one format
+print(file.suffixes) # Return list of file's suffixes
+>>>>>>> cbbea46da5faa5421a71f2bd5182dbd3b9844bee

@@ -26,6 +26,7 @@
 # path_to_archive = shutil.make_archive("backup", "zip", "hw6")
 
 # shutil.unpack_archive(path_to_archive, "/hw6")
+<<<<<<< HEAD
 
 from pathlib import Path
 
@@ -33,3 +34,5 @@ path = Path('.')
 
 new_path = Path(path)
 print(type(new_path))
+=======
+>>>>>>> cbbea46da5faa5421a71f2bd5182dbd3b9844bee

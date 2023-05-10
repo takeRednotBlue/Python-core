@@ -262,14 +262,10 @@ def files_amount(path):
     path = Path(path)
     items = [item for item in path.rglob("*")]
     files_amount = len([file for file in items if file.is_file()])
-    # dirs_amount = len([dir for dir in items if dir.is_dir()])
-    # suffixes = list(set([item.suffix.lower() for item in items]))
-    # return files_amount, dirs_amount, suffixes
     return files_amount
 
 def make_report(destPath: str|Path, backup):
     '''Writes report into a file'''
-    # if destPath is str:
     destPath = Path(destPath)
     files_count = 0
     dirs_count = 0
@@ -289,7 +285,7 @@ Path: {destPath}\n\n
         
         for root, dirs, files in os.walk(destPath):
             root = Path(root)
-            # Displays only sorted in dirs
+            # Displays info only about dirs in root path
             if root.parent == destPath:
                 suffixes = list(set([Path(file).suffix.lower() for file in files]))
                 suffixes_str = ", ".join(map(repr, suffixes))

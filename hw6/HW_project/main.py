@@ -1,10 +1,10 @@
 """
 1. Скрипт приймає один аргумент при запуску це шлях до папки для сортування.
 2. Також за бажанням можна прописати другим аргументом "backup", що вкаже скрипту
-перед сортування заархівувати папку яку буде сортовано на помістити цей архів в середину.
-3. Результати роботи скрипту виводяться в термінал, а також створююється два текстові файли 
-один з яким містить туж інформацію що і виведено до терміналу, а також лог* сортування.
-Другий містить в собі лог* нормалізації.
+перед сортування заархівувати папку яку буде сортовано та помістити його до цієї папки.
+3. Результати роботи скрипту виводяться до терміналу, а також створююється два текстові файли 
+один з яким містить таку ж інформацію що виведено до терміналу, а також лог* сортування.
+Другий містить в собі лог* нормалізації та кількість нормалізованих файлів.
 * Мається на увазі список шляхів до сортування/нормалізації та після.
 """
 
@@ -24,17 +24,18 @@ def main(path, backup=False):
     sort_log, unpacked_archs_count = sort_dir(path)
     removed_dirs = remove_empty_dirs(path)
     
-    # Shows results of script in terminal
+    # Shows results of the script in terminal
 
     dirs_info(path)
-    print(f'''
+    print(
+f'''
 {'Amount of sorted files:':<30} {files_num_init}
 {'Normalized files:':<30} {normalized_files}
 {'Unpacked archives:':<30} {unpacked_archs_count}
 {'Removed empty directories:':<30} {removed_dirs}
 ''')
 
-    # Creates two file. First one contains results of the script work and sorting log. 
+    # Creates two file. First contains results of the script and sorting log. 
     # Second contains log of normalized files.
 
     make_report(path, backup)

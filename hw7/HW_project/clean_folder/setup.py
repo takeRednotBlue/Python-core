@@ -4,7 +4,7 @@ setup(
     name='clean_folder',
     version='1.0.0',
     description='Script for sorting files in folder',
-    url='https://github.com/takeRednotBlue/Python-core/tree/main-chgd/hw6/HW_project',
+    url='https://github.com/takeRednotBlue/Python-core/tree/main-chgd/hw7/HW_project/clean_folder/clean_folder',
     author='Maksym Klym',
     author_email='maxymklym1996@gmail.com',
     license='MIT',

@@ -9,7 +9,7 @@
 """
 
 import sys
-from tools import *
+from clean_folder.tools import *
 from pathlib import Path
 
 def clean_folder(path, backup=False):

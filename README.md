@@ -1,2 +1,2 @@
-# Python-module-01
-For homeworks and tryings.
+# Pyhon-core
+My homeworks and materials for modules.

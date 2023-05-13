@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>65.5.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clean_folder_by_MK"
+version = "1.0.0"
+authors = [
+    { name = "Maksym Klym", email = "maxymklym1996@gmail.com"},
+]
+description = "Script for sorting files in junked folders"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = ""
+
+

@@ -19,7 +19,7 @@ def clean_folder(path, backup=False):
 
     # Main logic. Results of the functions assign to variables for future reporting
     
-    files_num_init = files_amount(path)
+    files_amount_init = files_amount(path)
     normalized_log, normalized_files = normalize(path)
     sort_log, unpacked_archs_count = sort_dir(path)
     removed_dirs = remove_empty_dirs(path)
@@ -29,7 +29,7 @@ def clean_folder(path, backup=False):
     dirs_info(path)
     print(
 f'''
-{'Amount of sorted files:':<30} {files_num_init}
+{'Amount of sorted files:':<30} {files_amount_init}
 {'Normalized files:':<30} {normalized_files}
 {'Unpacked archives:':<30} {unpacked_archs_count}
 {'Removed empty directories:':<30} {removed_dirs}
@@ -42,7 +42,7 @@ f'''
     with open(path / 'report.txt', 'a', encoding="utf-8") as rep:
         rep.write(
 f'''
-{'Amount of sorted files:':<30} {files_num_init}
+{'Amount of sorted files:':<30} {files_amount_init}
 {'Normalized files:':<30} {normalized_files}
 {'Unpacked archives:':<30} {unpacked_archs_count}
 {'Removed empty directories:':<30} {removed_dirs}

@@ -1,80 +1,27 @@
 import re
 import os
-import sys
-from datetime import datetime
-from pathlib import Path
 import shutil
+from pathlib import Path
+from datetime import datetime
 
 def translitterate(text: str) -> str:
-    letters_dict = {
-        'а': 'a',
-        'б': 'b',
-        'в': 'v',
-        'г': 'h',
-        'ґ': 'g',
-        'д': 'd',
-        'е': 'e',
-        'є': 'ie',
-        'ж': 'zh',
-        'з': 'z',
-        'и': 'y',
-        'і': 'i',
-        'ї': 'i',
-        'й': 'i',
-        'к': 'k',
-        'л': 'l',
-        'м': 'm',
-        'н': 'n',
-        'о': 'o',
-        'п': 'p',
-        'р': 'r',
-        'с': 's',
-        'т': 't',
-        'у': 'u',
-        'ф': 'f',
-        'х': 'kh',
-        'ц': 'ts',
-        'ч': 'ch',
-        'ш': 'sh',
-        'щ': 'shch',
-        'ь': '',
-        'ю': 'iu',
-        'я': 'ia',
-        'А': 'A',
-        'Б': 'B',
-        'В': 'V',
-        'Г': 'H',
-        'Ґ': 'G',
-        'Д': 'D',
-        'Е': 'E',
-        'Є': 'Ye',
-        'Ж': 'Zh',
-        'З': 'Z',
-        'И': 'Y',
-        'І': 'I',
-        'Ї': 'Yi',
-        'Й': 'Y',
-        'К': 'K',
-        'Л': 'L',
-        'М': 'M',
-        'Н': 'N',
-        'О': 'O',
-        'П': 'P',
-        'Р': 'R',
-        'С': 'S',
-        'Т': 'T',
-        'У': 'U',
-        'Ф': 'F',
-        'Х': 'Kh',
-        'Ц': 'Ts',
-        'Ч': 'Ch',
-        'Ш': 'Sh',
-        'Щ': 'Shch',
-        'Ю': 'Yu',
-        'Я': 'Ya'
-    }
+    TRANS_DICT = {}
 
-    trans_dict = str.maketrans(letters_dict)
+    cyrillic = [
+        'а', 'б', 'в', 'г', 'ґ', 'д', 'е', 'є', 'ж', 'з', 'и', 'і', 'ї', 'й', 'к', 'л', 'м', 'н', 
+        'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ь', 'ю', 'я'
+        ]
+    
+    latin = [
+        'a', 'b', 'v', 'h', 'g', 'd', 'e', 'ie', 'zh', 'z', 'y', 'i', 'i', 'i', 'k', 'l', 'm', 'n', 
+        'o', 'p', 'r', 's', 't', 'u', 'f', 'kh', 'ts', 'ch', 'sh', 'shch', '', 'iu', 'ia'
+        ]
+
+    for cyr, lat in zip(cyrillic, latin):
+        TRANS_DICT[cyr] = lat
+        TRANS_DICT[cyr.upper()] = lat.capitalize()
+
+    trans_dict = str.maketrans(TRANS_DICT)
     new_text = text.translate(trans_dict)
     return new_text
 
@@ -87,7 +34,7 @@ def normalize(path: str) -> tuple:
     log_list = []
     count_normalized_files = 0
     max_attempts = 100
-    suffix = 1
+    add_suffix = 1
 
     path = Path(path)
     files = [file for file in get_all_items(path)]
@@ -99,12 +46,12 @@ def normalize(path: str) -> tuple:
         
         if file.name != new_path.name:
             # Handles cases when file exists in order not to rewrite it
-            while new_path.exists() and suffix <= max_attempts:
-                new_name = f"{new_stem}_{suffix}{file.suffix}"
+            while new_path.exists() and add_suffix <= max_attempts:
+                new_name = f"{new_stem}_{add_suffix}{file.suffix}"
                 new_path = file.with_name(new_name)
-                suffix += 1
+                add_suffix += 1
                 
-            if suffix > max_attempts:
+            if add_suffix > max_attempts:
                 raise Exception("Could not move file, maximum number of attempts reached")
                        
             count_normalized_files += 1
@@ -124,7 +71,7 @@ def new_dir(path: Path, newDirName: str) -> Path:
     return newDir
 
 def get_all_items(path: Path):
-        '''Generator that yields items recursively from dirs and subdirs'''
+        '''Generator that yields files recursively from dirs and subdirs'''
         for item in path.iterdir():
             if item.is_dir():
                 yield from get_all_items(item)
@@ -153,15 +100,15 @@ def move_to_folder(file: Path, destPath: Path) -> Path:
     a suffix to the file name until a unique name is found. Returns new path of the file."""
     
     max_attempts = 100
-    suffix = 1
+    add_suffix = 1
     
     dest_file_path = destPath / file.name
     # Handles cases when file exist in order not to rewrite it
-    while dest_file_path.exists() and suffix <= max_attempts:
-        suffix += 1
-        dest_file_path = destPath / f"{file.stem}_{suffix}{file.suffix}"
+    while dest_file_path.exists() and add_suffix <= max_attempts:
+        add_suffix += 1
+        dest_file_path = destPath / f"{file.stem}_{add_suffix}{file.suffix}"
     
-    if suffix > max_attempts:
+    if add_suffix > max_attempts:
         raise Exception("Could not move file, maximum number of attempts reached")
     
     file.rename(dest_file_path)
@@ -173,17 +120,48 @@ def sort_dir(path: str|Path, unpackArch=True) -> tuple:
     which contains list with pairs of paths before and after sorting and integer number of unpacked archives.
     '''
     file_formats = {
-    'Audio': ['.mp3', '.wav', '.aac', '.wma', '.ogg', '.flac', '.alac', '.aiff', '.ape', '.au', '.m4a', '.m4b', '.m4p', '.m4r', '.mid', '.midi', '.mpa', '.mpc', '.oga', '.opus', '.ra', '.ram', '.tta', '.weba'],
-    'Video': ['.mp4', '.avi', '.mkv', '.wmv', '.mov', '.flv', '.webm', '.m4v', '.mpg', '.mpeg', '.3gp', '.3g2', '.m2ts', '.mts', '.vob', '.ogv', '.mxf', '.divx', '.f4v', '.h264'],
-    'Images': ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff', '.svg', '.webp', '.eps', '.raw', '.cr2', '.nef', '.dng', '.orf', '.arw', '.pef', '.raf', '.sr2', '.kdc', '.mos', '.mrw', '.dcr', '.x3f', '.erf', '.mef', '.pcx'],
-    'Documents': ['.dot', '.odi', '.sxc', '.sxd', '.doc', '.txt', '.odf', '.sxw', '.odt', '.pdf', '.sxg', '.ott', '.odg', '.stw', '.sxi', '.stc', '.dotm', '.md', '.odc', '.docx', '.dotx', '.rtf'],
-    'Spreadsheets': ['.xls', '.xlsx', '.csv', '.xlsm', '.xlt', '.xltx', '.xlsb', '.numbers', '.ods'],
-    'Presentations': ['.ppt', '.pptx', '.key', '.odp', '.pps', '.ppsx', '.pot', '.potx', '.potm'],
-    'Archives': ['.zip', '.rar', '.tar.gz', '.7z', '.tar', '.tgz', '.bz2', '.dmg', '.iso', '.gz', '.jar', '.cab', '.z', '.tar.bz2', '.xz'],
-    'Programs': ['.exe', '.apk', '.app', '.msi', '.deb', '.rpm', '.bat', '.sh', '.com', '.gadget', '.vb', '.vbs', '.wsf'],
-    'Code': ['.py', '.java', '.js', '.html', '.css', '.cpp', '.c', '.php', '.xml', '.rb', '.pl', '.swift', '.h', '.hpp', '.cs', '.m', '.mm', '.kt', '.dart', '.go', '.lua', '.r', '.ps1'],
-    'Database': ['.sql', '.db', '.mdb', '.accdb', '.sqlitedb', '.dbf', '.dbs', '.myd', '.frm', '.sqlite'],
-    'Ebook': ['.epub', '.azw', '.azw3', '.fb2', '.ibooks', '.lit', '.mobi', '.pdb']
+    'Audio': [
+        '.mp3', '.wav', '.aac', '.wma', '.ogg', '.flac', '.alac', '.aiff', '.ape', '.au', 
+        '.m4a', '.m4b', '.m4p', '.m4r', '.mid', '.midi', '.mpa', '.mpc', '.oga', '.opus', 
+        '.ra', '.ram', '.tta', '.weba'
+        ],
+    'Video': [
+        '.mp4', '.avi', '.mkv', '.wmv', '.mov', '.flv', '.webm', '.m4v', '.mpg', '.mpeg', 
+        '.3gp', '.3g2', '.m2ts', '.mts', '.vob', '.ogv', '.mxf', '.divx', '.f4v', '.h264'
+        ],
+    'Images': [
+        '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tif', '.tiff', '.svg', '.webp', '.eps', 
+        '.raw', '.cr2', '.nef', '.dng', '.orf', '.arw', '.pef', '.raf', '.sr2', '.kdc', '.mos', 
+        '.mrw', '.dcr', '.x3f', '.erf', '.mef', '.pcx'
+        ],
+    'Documents': [
+        '.dot', '.odi', '.sxc', '.sxd', '.doc', '.txt', '.odf', '.sxw', '.odt', '.pdf', '.sxg', 
+        '.ott', '.odg', '.stw', '.sxi', '.stc', '.dotm', '.md', '.odc', '.docx', '.dotx', '.rtf'
+        ],
+    'Spreadsheets': [
+        '.xls', '.xlsx', '.csv', '.xlsm', '.xlt', '.xltx', '.xlsb', '.numbers', '.ods'
+        ],
+    'Presentations': [
+        '.ppt', '.pptx', '.key', '.odp', '.pps', '.ppsx', '.pot', '.potx', '.potm'
+        ],
+    'Archives': [
+        '.zip', '.rar', '.tar.gz', '.7z', '.tar', '.tgz', '.bz2', '.dmg', '.iso', '.gz', '.jar', 
+        '.cab', '.z', '.tar.bz2', '.xz'
+        ],
+    'Programs': [
+        '.exe', '.apk', '.app', '.msi', '.deb', '.rpm', '.bat', '.sh', '.com', '.gadget', '.vb', 
+        '.vbs', '.wsf'
+        ],
+    'Code': [
+        '.py', '.java', '.js', '.html', '.css', '.cpp', '.c', '.php', '.xml', '.rb', '.pl', '.swift', 
+        '.h', '.hpp', '.cs', '.m', '.mm', '.kt', '.dart', '.go', '.lua', '.r', '.ps1'
+        ],
+    'Database': [
+        '.sql', '.db', '.mdb', '.accdb', '.sqlitedb', '.dbf', '.dbs', '.myd', '.frm', '.sqlite'
+        ],
+    'Ebook': [
+        '.epub', '.azw', '.azw3', '.fb2', '.ibooks', '.lit', '.mobi', '.pdb'
+        ]
     }
 
     log_list = []
@@ -195,7 +173,8 @@ def sort_dir(path: str|Path, unpackArch=True) -> tuple:
         for categ, formats in file_formats.items():
             if file.suffix.lower() in formats:
 
-                if categ == "Archives" and unpackArch == True and file.suffix in {".zip", ".tar", ".gztar", ".bztar", ".xztar"}:
+                if categ == "Archives" and unpackArch == True and file.suffix in {".zip", ".tar", ".gztar", 
+                                                                                  ".bztar", ".xztar"}:
                     # Avoid backup archive if such was made
                     if file.stem == path.name + "_backup":
                         break

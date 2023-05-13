@@ -18,7 +18,7 @@ To use Clean Folder, open a command prompt or terminal and run the `clean-folder
 clean-folder /path/to/folder
 ```
 
-### Optional Backup
+### Optional Backup (for now only for Windows based systems)
 
 You can include the optional `backup` argument to create a backup of the folder before sorting the files. This can be useful to preserve the original state of the folder in case you want to revert the changes.
 
@@ -40,7 +40,7 @@ This command will organize the files within `~/Documents` into subfolders based 
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/your-username/your-repo/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/takeRednotBlue/Python-core/blob/main-chgd/hw7/HW_project/clean_folder_by_MK/LICENSE) file for details.
 
 
 ## Acknowledgements

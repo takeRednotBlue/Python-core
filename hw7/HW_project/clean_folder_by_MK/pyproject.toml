@@ -14,11 +14,14 @@ license = {file = "LICENSE"}
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: MIT License",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
+[pyproject-scripts]
+clean-folder = "clean_folder_by_MK.main:main"
+
 [project.urls]
-"Homepage" = ""
+"Homepage" = "https://github.com/takeRednotBlue/Python-core/tree/main-chgd/hw7/HW_project/clean_folder_by_MK"
 
 

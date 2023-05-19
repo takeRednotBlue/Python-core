@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import random
+from random import randint
 from faker import Faker # installed in venv
 
 # sublist = [item[i] if i < len(item) else None for item in data.values()]
@@ -19,7 +19,7 @@ def create_user_bithday_dict():
         name = faker.name()
 
         # Generate a random birthday within the specified date range
-        random_date = start_date + timedelta(days=random.randint(0, (end_date - start_date).days))
+        random_date = datetime(year=randint(1969, 2005), month=5, day=randint(18, 31))
         
         # Create a dictionary with the colleague's name and birthday
         colleague = {
@@ -36,5 +36,6 @@ def create_user_bithday_dict():
 
 dt = datetime.now()
 delta = timedelta(days=1)
+create_user_bithday_dict()
 
-print(delta * 2.0)
+# print(delta * 2.0)

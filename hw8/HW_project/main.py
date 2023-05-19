@@ -16,21 +16,21 @@ SEVEN_DAYS = 7
 WEEK_START = 'Monday'
 
 users = [
-    {'name': 'Gary Wright', 'greating_date': datetime(2023, 5, 28)},
-    {'name': 'Christopher Stephens', 'greating_date': datetime(2023, 5, 18)},
-    {'name': 'Regina Martinez', 'greating_date': datetime(2023, 5, 27)},
-    {'name': 'Julie Carroll', 'greating_date': datetime(2023, 5, 24)},
-    {'name': 'Justin Anderson', 'greating_date': datetime(2023, 5, 21)},
-    {'name': 'Kayla Johnson', 'greating_date': datetime(2023, 5, 28)},
-    {'name': 'Stephanie Hill', 'greating_date': datetime(2023, 5, 31)},
-    {'name': 'Zachary Young', 'greating_date': datetime(2023, 5, 30)},
-    {'name': 'David Rowe', 'greating_date': datetime(2023, 5, 29)},
-    {'name': 'Ruben Carlson', 'greating_date': datetime(2023, 5, 24)},
-    {'name': 'Jason Pennington', 'greating_date': datetime(2023, 5, 25)},
-    {'name': 'Betty Hill', 'greating_date': datetime(2023, 5, 30)},
-    {'name': 'Lisa Payne', 'greating_date': datetime(2023, 5, 23)},
-    {'name': 'Kathleen Allison', 'greating_date': datetime(2023, 5, 22)},
-    {'name': 'Cheryl Shepard', 'greating_date': datetime(2023, 5, 25)},
+    {'name': 'Zachary Myers DDS', 'birthday': datetime(1999, 5, 28)},
+    {'name': 'Tyler Morales', 'birthday': datetime(1983, 5, 25)},
+    {'name': 'Stephanie Carter', 'birthday': datetime(1999, 5, 19)},
+    {'name': 'Robin Gilbert', 'birthday': datetime(1969, 5, 24)},
+    {'name': 'Jeffrey Hahn', 'birthday': datetime(1983, 5, 19)},
+    {'name': 'Richard Mclean', 'birthday': datetime(1984, 5, 25)},
+    {'name': 'Max Chang', 'birthday': datetime(1972, 5, 20)},
+    {'name': 'Alan Sandoval', 'birthday': datetime(1997, 5, 22)},
+    {'name': 'Chad Brown', 'birthday': datetime(1979, 5, 22)},
+    {'name': 'Tina Faulkner', 'birthday': datetime(2000, 5, 30)},
+    {'name': 'Michael Stanley', 'birthday': datetime(1998, 5, 25)},
+    {'name': 'April Kaiser', 'birthday': datetime(2002, 5, 22)},
+    {'name': 'Maria Phillips', 'birthday': datetime(1993, 5, 23)},
+    {'name': 'Jeremy Gomez', 'birthday': datetime(1981, 5, 28)},
+    {'name': 'Nicole Martin', 'birthday': datetime(1976, 5, 27)},
 ]
 
 def get_birthdays_per_week(users: list) -> dict:
@@ -67,8 +67,8 @@ def get_birthdays_per_week(users: list) -> dict:
     return greating_dict
 
 def print_birthdays_per_week(birhday_dict: dict):
-    for day, names in birhday_dict.items():
-        print("{:<10}: {}".format(day, ", ".join(names)))
+    for weekday, names in birhday_dict.items():
+        print("{:<10}: {}".format(weekday, ", ".join(names)))
 
 def main():
     birthdays_per_week = get_birthdays_per_week(users)

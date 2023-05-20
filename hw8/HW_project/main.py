@@ -39,10 +39,13 @@ def get_birthdays_per_week(users: list) -> dict:
     greating_date = current_date
     greating_dict = defaultdict(list)
     
-    # Handles case when the current day is Monday and we have to  
+    # Handles case when the current day is Monday or Sunday and we have to  
     # greet people who had birthdays during previous weekends
     if current_date.weekday() == 0:
         greating_date -= date_offset * 2.0
+    elif current_date.weekday() == 6:
+        greating_date -= date_offset
+
     
     for _ in range(SEVEN_DAYS_INTERVAL):
 

@@ -12,7 +12,7 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 
-SEVEN_DAYS = 7
+SEVEN_DAYS_INTERVAL = 7
 WEEK_START = 'Monday'
 
 users = [
@@ -40,25 +40,26 @@ def get_birthdays_per_week(users: list) -> dict:
     greating_dict = defaultdict(list)
     
     # Handles case when the current day is Monday and we have to  
-    # greet people who had birthdays on previous weekends
+    # greet people who had birthdays during previous weekends
     if current_date.weekday() == 0:
         greating_date -= date_offset * 2.0
     
-    for _ in range(SEVEN_DAYS):
+    for _ in range(SEVEN_DAYS_INTERVAL):
+
+        # Handles case when Saturday is the last day of the SEVEN_DAYS_INTERVAL and it's 
+        # birthdays included in Monday greetings of the current week
+        if current_date.weekday() == 6 and greating_date.weekday() == 5:
+            continue
+
         for person in users:
             for key, value in person.items():
                 if key == 'birthday':
                     birthday = value
                     has_birthday = birthday.day == greating_date.day \
-                                    and greating_date.month == greating_date.month
-                    
+                                   and birthday.month == greating_date.month                    
                     if has_birthday:
                         if greating_date.weekday() != 5 and greating_date.weekday() != 6:
                             greating_dict[greating_date.strftime("%A")].append(person['name'])
-                        # Handles case when Saturday is the last day of the SEVEN_DAYS interval and it's 
-                        # birthdays included in Monday greetings of the current week
-                        elif current_date.weekday() == 6 and greating_date.weekday() == 5:
-                            continue
                         else:
                             greating_dict["Monday"].append(person['name'])
         

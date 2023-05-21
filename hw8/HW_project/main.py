@@ -50,7 +50,7 @@ def get_birthdays_per_week(users: list) -> dict:
 
         # Handles case when Saturday is the last day of the SEVEN_DAYS_INTERVAL and it's 
         # birthdays included in Monday greetings of the current week
-        if (greating_date + date_offset * 6.0).weekday() == 5:
+        if (current_date + date_offset * 5.0).weekday() == greating_date.weekday() == 5:
             continue
         else:
             for person in users:

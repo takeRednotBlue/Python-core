@@ -8,7 +8,6 @@
 Тиждень починається з понеділка.
 
 """
-
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -27,7 +26,7 @@ users = [
     {'name': 'Chad Brown', 'birthday': datetime(1979, 5, 22)},
     {'name': 'Tina Faulkner', 'birthday': datetime(2000, 5, 30)},
     {'name': 'Michael Stanley', 'birthday': datetime(1998, 5, 25)},
-    {'name': 'April Kaiser', 'birthday': datetime(2002, 5, 22)},
+    {'name': 'April Kaiser', 'birthday': datetime(2002, 5, 20)},
     {'name': 'Maria Phillips', 'birthday': datetime(1993, 5, 23)},
     {'name': 'Jeremy Gomez', 'birthday': datetime(1981, 5, 28)},
     {'name': 'Nicole Martin', 'birthday': datetime(1976, 5, 27)},
@@ -51,29 +50,28 @@ def get_birthdays_per_week(users: list) -> dict:
 
         # Handles case when Saturday is the last day of the SEVEN_DAYS_INTERVAL and it's 
         # birthdays included in Monday greetings of the current week
-        if current_date.weekday() == 6 and greating_date.weekday() == 5:
+        if (greating_date + date_offset * 6.0).weekday() == 5:
             continue
-
-        for person in users:
-            for key, value in person.items():
-                if key == 'birthday':
-                    birthday = value
-                    has_birthday = birthday.day == greating_date.day \
-                                   and birthday.month == greating_date.month                    
-                    if has_birthday:
-                        if greating_date.weekday() != 5 and greating_date.weekday() != 6:
-                            greating_dict[greating_date.strftime("%A")].append(person['name'])
-                        else:
-                            greating_dict["Monday"].append(person['name'])
-        
-        greating_date += date_offset
+        else:
+            for person in users:
+                for key, value in person.items():
+                    if key == 'birthday':
+                        birthday = value
+                        has_birthday = birthday.day == greating_date.day \
+                                    and birthday.month == greating_date.month                    
+                        if has_birthday:
+                            if greating_date.weekday() != 5 and greating_date.weekday() != 6:
+                                greating_dict[greating_date.strftime("%A")].append(person['name'])
+                            else:
+                                greating_dict["Monday"].append(person['name'])
+            
+            greating_date += date_offset
 
     return greating_dict
 
 def print_birthdays_per_week(birhday_dict: dict):
     for weekday, names in birhday_dict.items():
         print("{:<10}: {}".format(weekday, ", ".join(names)))
-
 def main():
     birthdays_per_week = get_birthdays_per_week(users)
     print_birthdays_per_week(birthdays_per_week)
@@ -81,6 +79,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
 
 
 

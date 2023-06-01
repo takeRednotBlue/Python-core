@@ -2,6 +2,8 @@
 
 Порядок написання бота:
     1. Створити функції обробки команд.
+        - Перевірка коректності введеного номеру.
+        - Виведення номерів в єдиному форматі
     2. На основі фукцій створити декоратор обробки помилок.
     3. Записувати контакти у файл .json та зчитувати дані з нього:
         - зчитувати дані при запуску бота та зберігати в словник.
@@ -44,16 +46,32 @@
 """
 
 
-import argparse
+import json
+from pathlib import Path
 
 
+# Handles contacts book file
+contacts_file = Path(__file__).parent / 'contacts.json'
+if contacts_file.exists():
+    with open(contacts_file, 'r') as file:
+        contacts = json.load(file)
+else:
+    contacts_file.touch()
+    contacts = {}
 
-contacts = {}
 
 def input_error(func):
-    # try:
+    def wrapper(*args):
+        try:
+            func(*args)
+        except IndexError as inderr:
+            print('Missing arguments. Please write name and phone to add new or change existing contact'\
+                  'or just name to see contact\'s phone number')
+        except KeyError as keyerr:
+            print(f'Cannot find such contact.')
     #     result
-    pass
+        # pass
+    return wrapper
 
 def commands_parser(input: str) -> tuple:
     # hello *args(ignore)
@@ -64,11 +82,11 @@ def commands_parser(input: str) -> tuple:
     # good bye|close|exit *args(ignore)
     # help *args(ignore)
     words_list = input.split()
-    if words_list[0] == 'show' or words_list[0] == 'good':
-        command = ' '.join(words_list[:2])
+    if words_list[0].lower() == 'show' or words_list[0].lower() == 'good':
+        command = ' '.join(words_list[:2]).lower()
         arguments = words_list[2:]
     else:
-        command = words_list[0]
+        command = words_list[0].lower()
         arguments = words_list[1:]
     
     return command, arguments
@@ -76,6 +94,7 @@ def commands_parser(input: str) -> tuple:
 def greet(*args):
     print('How can I help you!')
 
+@input_error
 def add_contact(args: list):
     name, phone = args[0], args[1]
     if args[0] in contacts:
@@ -84,22 +103,27 @@ def add_contact(args: list):
         contacts[name] = phone
         print(f'Contact "{name}" with phone number {phone} was successfully added.')
     
-
+@input_error
 def change_number(args: list):
     name, phone = args[0], args[1]
-    if name in contacts:
-        contacts[name] = phone
-        print(f'"{name}" phone number was successfully changed to {phone}.')
-    else:
-        print(f'Contact "{name}" does\'t exist. Try to create new with \'add\' command.')
+    contacts[name] = phone
+    print(f'"{name}" phone number was successfully changed to {phone}.')
+    # if name in contacts:
+        # contacts[name] = phone
+        # print(f'"{name}" phone number was successfully changed to {phone}.')
+    # else:
+        # print(f'Contact "{name}" does\'t exist. Try to create new with \'add\' command.')
 
+@input_error
 def show_contact_number(args: list):
     name = args[0]
-    if name in contacts:
-        phone = contacts[name] 
-        print(f'"{name}" phone number is {phone}.')
-    else:
-        print(f'"{name}" contact doesn\'t exist.')   
+    phone = contacts[name] 
+    print(f'"{name}" phone number is {phone}.')
+    # if name in contacts:
+    #     phone = contacts[name] 
+    #     print(f'"{name}" phone number is {phone}.')
+    # else:
+    #     print(f'"{name}" contact doesn\'t exist.')   
 
 def show_whole_contacts_book(*args):
     count = 1
@@ -125,25 +149,29 @@ COMMANDS = {
     'change': change_number,
     'phone': show_contact_number,
     'show all': show_whole_contacts_book,
-    # 'good bye': exit_bot, 
-    # 'close': exit_bot,
-    # 'exit': exit_bot,
     'help': None,
 }
+
+END_COMMANS = ['exit', 'good bye', 'close']
 
 def main():
     is_working = True
 
     print('Hello, I\'m your personal bot-assistant.')
+
     while is_working:
         user_input = input('>>> ')
         command, arguments = commands_parser(user_input)
         if command in COMMANDS:
             command_handler = COMMANDS[command]
             command_handler(arguments)
-        elif command == 'exit':
+        elif command in END_COMMANS:
             exit_bot()
+            with open(contacts_file, 'w') as file:
+                json.dump(contacts, file)
             is_working = False
+        else:
+            print('Command not found.')
 
 
 if __name__ == '__main__':

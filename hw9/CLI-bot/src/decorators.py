@@ -1,5 +1,5 @@
 
-# Lists of commads handlers by argumets they take.
+# Lists of commads handlers sorted by argumets they take.
 HAS_NO_ARGS = [
     "greet",
     "show_whole_contacts_book",
@@ -30,5 +30,5 @@ def input_error(func):
             print(f'Cannot find such contact. Please check spelling and try again.')
         except ValueError:
             if func.__name__ == 'add_contact':
-                print(f'Contact "{args[0]}" already exist. If you want to change phone number use "change" command')
+                print(f'Contact {0} already exist. If you want to change phone number use "change" command.')
     return wrapper

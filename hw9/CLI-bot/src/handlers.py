@@ -1,8 +1,4 @@
-
-
 from src.decorators import input_error
-
-
 
 def greet(*args):
     print('How can I help you?')
@@ -60,8 +56,8 @@ def exit_bot():
 
 def get_help(args: list, contacts_book: dict):
     print(
-    """exImportant! Divide command and arguments only by using white spaces in the other case it can lead to data coruption or 
-errors.
+    """Important! Divide command and arguments only by using white spaces in the other case it can lead to errors 
+or data coruption. Don't terminate bot with CTRL+C combination because all unsaved changes will be lost.
 
 Available commands:
     - hello                     Greet user

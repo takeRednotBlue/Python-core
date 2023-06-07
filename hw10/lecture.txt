@@ -1,0 +1,5 @@
+Duck typing розглянути.
+Double undersore infront of class atributes
+
+isinstanse() returns True for class and super class 
+type(obj) is <class> returns True only if obj is instanse of the exact class

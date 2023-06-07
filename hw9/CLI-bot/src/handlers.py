@@ -1,10 +1,10 @@
 from src.decorators import input_error
 
-def greet(*args):
+def greet(*args, **kwargs):
     print('How can I help you?')
 
 @input_error
-def add_contact(args: list, contacts_book: dict):
+def add_contact(args: list, contacts_book: dict) -> None:
     name, phone = args[0], args[1]
     if name in contacts_book:
         raise ValueError
@@ -13,14 +13,14 @@ def add_contact(args: list, contacts_book: dict):
         print(f'Contact "{name}" with phone number {phone} was successfully added.')
 
 @input_error
-def remove_contact(args: list, contacts_book: dict):
+def remove_contact(args: list, contacts_book: dict) -> None:
     name = args[0]
     phone = contacts_book.pop(name)
     print(f'Contact "{name}" was successfully removed.')
     
     
 @input_error
-def change_number(args: list, contacts_book: dict):
+def change_number(args: list, contacts_book: dict) -> None:
     name, phone = args[0], args[1]
     if name in contacts_book:
         contacts_book[name] = phone
@@ -29,13 +29,13 @@ def change_number(args: list, contacts_book: dict):
         raise KeyError
 
 @input_error
-def show_contact_number(args: list, contacts_book: dict):
+def show_contact_number(args: list, contacts_book: dict) -> None:
     name = args[0]
     phone = contacts_book[name] 
     print(f'"{name}" phone number is {phone}.')
   
 
-def show_whole_contacts_book(args: list, contacts_book: dict):
+def show_whole_contacts_book(args: list, contacts_book: dict) -> None:
     count = 1
     print('='*44)
     print('|{:^5}|{:^20}|{:^15}|'.format('N', 'Name', 'Phone number'))
@@ -54,7 +54,7 @@ def exit_bot():
     print('I\'ll miss you so much!')
    
 
-def get_help(args: list, contacts_book: dict):
+def get_help(*args, **kwargs) -> None:
     print(
     """Important! Divide command and arguments only by using white spaces in the other case it can lead to errors 
 or data coruption. Don't terminate bot with CTRL+C combination because all unsaved changes will be lost.

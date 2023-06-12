@@ -1,11 +1,4 @@
 """
-d 
-    - add contact
-    - remove contact
-    - change contact
-    - find contact (by one or more creteria)
-
-
     В цій домашній роботі ви повинні реалізувати такі класи:
 
     Клас AddressBook, який наслідується від UserDict, та ми потім додамо логіку пошуку за записами до цього класу.
@@ -26,16 +19,11 @@ d
 
 from collections import UserDict
 
-class DataNotFoundError(Exception):
-    pass
 
 class PhoneNotFoundError(Exception):
     pass
 
-class ContactNotFoundError(Exception):
-    pass
-
-class AlreadyExistsError(Exception):
+class PhoneAlreadyExistsError(Exception):
     pass
 
 class AddressBook(UserDict):
@@ -49,41 +37,48 @@ class AddressBook(UserDict):
     
     def remove_record(self, name):
         self.data.pop(name)
-
-
-       
+      
 
 class Record:
-    def __init__(self, name, phone):
-        self.name = name
+    def __init__(self, name, phone=None):
+        self.name = Name(name)
         self.phones = []
-        self.email = None
-        self.add_phone(phone)
+        if phone:
+            self.add_phone(phone)
 
     def add_phone(self, phone):
-        if phone not in self.phones:
+        phone = Phone(phone)
+        if phone.get_phone() not in self.get_phones():
             self.phones.append(phone)
         else:
-            print(f'{phone} already exists.')
+            raise PhoneAlreadyExistsError
 
     def change_phone(self, phone, new_phone):
+        phone = Phone(phone)
+        new_phone = Phone(new_phone)
         changed = False
-        for phone_obj in self.phones:
-            if phone_obj.get_phone() == phone:
-                phone_index = self.phones.index(phone_obj)
-                new_phone = Phone(new_phone)
-                self.phones.insert(phone_index, new_phone)
-                self.phones.remove(phone_obj)
+
+        for item in self.phones:
+            if phone.get_phone() == item.get_phone():
+                item_pos = self.phones.index(item)
+                self.phones.insert(item_pos, new_phone)
+                self.phones.remove(item)
                 changed = True
+
         if not changed:
             raise PhoneNotFoundError
         
-
     def remove_phone(self, phone):
-        if phone in self.phones:
-            self.phones.remove(phone)
-        else:
-            print(f'{phone} doesn\'t exist for {self.name} contact.')
+        phone = Phone(phone)
+        removed = False
+
+        for item in self.phones:
+            if phone.get_phone() == item.get_phone():
+                self.phones.remove(item)
+                removed = True
+
+        if not removed:
+            raise PhoneNotFoundError
 
     def get_phones(self):
        phones_list = [phone.get_phone() for phone in self.phones]
@@ -91,12 +86,22 @@ class Record:
     
 
 class Field:
-    pass
+    def __init__(self, value):
+        self.value = value
 
 class Phone(Field):
     def __init__(self, value):
-        self.value = value
-    
+        super().__init__(value)
+        self._normalize_phone()
+
+    def _normalize_phone(self):
+        if len(self.value) == 12:
+            self.value = '+' + self.value
+        elif len(self.value) == 10:
+            self.value = '+38' + self.value
+        else:
+            return f'Note: format of the phone \'{self.value}\' doesn\'t comply to the nation phone numbers conventions.'
+  
     def get_phone(self):
         return self.value
 
@@ -107,7 +112,6 @@ class Name(Field):
     def get_name(self):
         return self.value
 
-# print(dir(Field))
 
 if __name__ == "__main__":
     name = Name('Bill')

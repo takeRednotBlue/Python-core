@@ -1,4 +1,4 @@
-from classes import PhoneNotFoundError
+from classes import PhoneNotFoundError, PhoneAlreadyExistsError
 
 # Lists of commads handlers sorted by argumets they take.
 HAS_NO_ARGS = [
@@ -33,7 +33,8 @@ def input_error(func):
             if func.__name__ == 'add_contact':
                 print(f'Contact {0} already exist. If you want to change phone number use "change" command.')
         except PhoneNotFoundError:
-            if func.__name__ == 'change_number':
-                print('Phone was not found.')
+            print('Phone was not found.')
+        except PhoneAlreadyExistsError:
+            print('Phone already exists.')
             
     return wrapper

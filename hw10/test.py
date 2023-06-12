@@ -28,6 +28,10 @@ class Animal:
 
     def say(self):
         return 'I\'m smart being and want respect.'
+    
+    def get_info(self):
+        # self.say()
+        return self.say() + f'My name is {self.nickname} and I weigh {self.weight} kilogram.' 
 
     def change_weight(self, weight):
         self.weight = weight
@@ -60,25 +64,30 @@ class Owner:
     
 
 class Cat(Animal, Breed):
-    def __init__(self, nickname, weight, breed, owner):
+    def __init__(self, nickname, weight, breed, owner, country='Ukraine'):
         self.breed = breed
         self.owner = owner
+        self.country = country
         super().__init__(nickname, weight)
 
     # def say(self):
     #     return "Meow"
 
+    def get_country(self):
+        return self.country
+
     def say(self):
-        super()
+        return 'Meow motherfucker!'
 
     def who_is_owner(self):
         return self.owner.info()
 
         
 Maxym = Owner('Maxym', 26, 'Berdychev')
-cat = Cat('Luna', 4, 'scotish', Maxym)
+cat = Cat('Luna', 4, 'scotish', Maxym, 'USA')
 
 # print(cat.who_is_owner())
+print(cat.get_info())
 
 # print(cat.weight)
 # Animal.change_weight(cat, 5)

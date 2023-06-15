@@ -1,0 +1,137 @@
+22:50
+Illia Anchiforov
+ Всім привіт
+Відповів на питання в https://docs.google.com/spreadsheets/d/14m_fqTAmjVE7OUYnVCKc0v6d9zCA9c07
+Бачу, що в попередній вкладці (модуль 3 заняття 2) є питання (яких не було, коли я відповідав).
+Хотів би наголосити на тому, що питання треба заносити в правильну вкладку (відповідно до заняття, на якому ми дивимося табличку). В іншому випадку питання, на жаль, ігноруються
+Ті люди, хто написали питання не в ту вкладку, якщо досі є питання щодо того, що ви писали, напишіть, будь ласка, ментору або в канал дз з яким це пов'язано.
+Такоє кидаю пару посилань, які показував на лекції:
+https://docs.python.org/3/library/stdtypes.html
+https://docs.python.org/3/library/pathlib.html (не показував але щодо теми pathlib)
+https://uk.wikipedia.org/wiki/%D0%94%D1%96%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%B0_%D0%92%D0%B5%D0%BD%D0%BD%D0%B0
+https://www.w3schools.com/python/python_ref_set.asp
+
+
+19.04.2023
+22:50
+Illia Anchiforov
+ Всім привіт
+Резюмую заняття в середу 19.04:
+Відповів на питання в таблиці https://docs.google.com/spreadsheets/d/14m_fqTAmjVE7OUYnVCKc0v6d9zCA9c07
+Ділюся посиланнями, на які міг посилатися під час заняття:
+https://docs.python.org/3/library/argparse.html - більш ускладнений варіант опрацювання аргументів, які ми передаємо після скрипта (з зірочкою)
+https://morsecode.world/international/translator.html - що я використовував для перекладу тексту в код Морзе
+
+
+26.04.2023
+21:53
+Illia Anchiforov
+ кілька прикладів та задач на регулярні вирази https://www.w3resource.com/python-exercises/re/
+
+
+ 01.05.2023
+ 23:28
+Illia Anchiforov
+ Всім привіт
+Кидаю кілька посилань (які вже були або ні), пов'язані з лекцієб в понеділок 1 травня:
+https://uk.wikipedia.org/wiki/%D0%A8%D1%96%D1%81%D1%82%D0%BD%D0%B0%D0%B4%D1%86%D1%8F%[…]D0%BC%D0%B0_%D1%87%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%BD%D1%8F
+https://uk.wikipedia.org/wiki/ASCII
+https://docs.python.org/3/library/stdtypes.html#bytearray
+https://www.w3schools.com/python/ref_file_truncate.asp
+https://mkyong.com/python/python-difference-between-r-w-and-a-in-open/
+https://www.geeksforgeeks.org/delete-a-directory-or-file-using-python/
+https://docs.python.org/3/library/base64.html
+https://stackoverflow.com/questions/10507230/insert-line-at-middle-of-file-with-python
+https://stackoverflow.com/questions/34847636/how-to-seek-end-of-txt-file-with-python-3-5
+
+
+
+10.05.2023
+
+21:47
+Illia Anchiforov
+ привіт, кидаю посилання щодо 2 заняття з 7 модуля
+https://docs.python.org/3/distutils/setupscript.html
+https://setuptools.pypa.io/en/latest/setuptools.html
+https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+https://setuptools.pypa.io/en/latest/userguide/entry_point.html
+https://stackoverflow.com/questions/774824/explain-python-entry-points
+https://docs.python.org/3/library/venv.html
+https://pip.pypa.io/en/stable/
+https://pypi.org/
+https://pypi.org/project/Django/
+https://pypi.org/project/numpy/
+https://github.com/numpy/numpy
+https://numpy.org/doc/stable/user/absolute_beginners.html
+https://numpy.org/doc/stable/reference/constants.html#numpy.inf
+https://pypi.org/project/beautifulsoup4/
+https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+https://pypi.org/project/pytest/
+https://github.com/pytest-dev/pytest
+https://docs.pytest.org/en/6.2.x/usage.html
+https://pypi.org/project/openpyxl/
+https://foss.heptapod.net/openpyxl/openpyxl
+
+
+
+17.05.2023
+23:15
+Illia Anchiforov
+ Всім привіт, кидаю скрипт з тим, що ми опрацювали + 15 прикладів, що не встигли (починаючи з 330 рядка)
+Також кидаю пару файлів-підказок і корисних посилань:
+https://docs.python.org/3/library/random.html#
+https://docs.python.org/3/library/datetime.html#
+https://strftime.org/
+https://howchoo.com/g/ywi5m2vkodk/working-with-datetime-objects-and-timezones-in-python
+https://www.educative.io/answers/how-to-use-the-mathisclose-function-in-python
+https://www.w3schools.com/python/ref_math_isclose.asp
+https://docs.python.org/3/library/collections.html#
+https://docs.python.org/3/library/decimal.html
+
+
+31.05.2023
+21:42
+Illia Anchiforov
+ привіт, кидаю посилання на ресурси з лекцій + код:
+https://stackoverflow.com/questions/2776829/difference-between-pythons-generators-and-iterators
+https://www.geeksforgeeks.org/python-closures/
+https://www.programiz.com/python-programming/closure
+https://www.askpython.com/python/examples/currying-in-python
+https://python-course.eu/advanced-python/currying-in-python.php
+https://www.geeksforgeeks.org/currying-function-in-python/
+https://www.javatpoint.com/currying-in-python
+https://www.tutorialspoint.com/currying-function-in-python
+
+
+05.06.2023
+22:05
+Illia Anchiforov
+ Привіт, кидаю скрипт і корисні посилання з лекції в понеділок
+https://peps.python.org/pep-0008/#class-names
+https://www.educative.io/answers/what-is-mro-in-python
+https://en.wikipedia.org/wiki/C3_linearization
+https://www.programiz.com/python-programming/user-defined-exception
+https://docs.python.org/3/library/string.html#string.ascii_uppercase
+
+
+07.06.2023
+Illia Anchiforov
+ привіт, кидаю скрипт і матеріали з лекції
+https://blog.devgenius.io/what-is-better-type-vs-isinstance-3b948d1b81b5
+https://www.scaler.com/topics/super-in-python/
+https://www.geeksforgeeks.org/g-fact-42-changing-class-members-python/
+(edited)
+
+
+12.06.2023
+21:31
+Illia Anchiforov
+ привіт, кидаю скрипт і корисні посилання
+https://stackoverflow.com/questions/9884132/what-are-iterator-iterable-and-iteration
+https://docs.python.org/dev/library/stdtypes.html#iterator-types
+https://docs.python.org/3/tutorial/classes.html#iterators
+https://www.geeksforgeeks.org/access-modifiers-in-python-public-private-and-protected/
+https://www.studytonight.com/python/access-modifier-python
+https://www.tutorialsteacher.com/python/public-private-protected-modifiers
+https://www.geeksforgeeks.org/__rmul__-in-python/
+https://www.programiz.com/python-programming/property

@@ -70,14 +70,19 @@ class Record:
         
     def remove_phone(self, phone):
         phone = Phone(phone)
-        removed = False
+        # removed = False
 
-        for item in self.phones:
-            if phone.get_phone() == item.get_phone():
-                self.phones.remove(item)
-                removed = True
+        # for item in self.phones:
+        #     if phone.get_phone() == item.get_phone():
+        #         self.phones.remove(item)
+        #         removed = True
 
-        if not removed:
+        # if not removed:
+        #     raise PhoneNotFoundError
+            
+        if phone in self.phones:
+            self.phones.remove(phone)
+        else:
             raise PhoneNotFoundError
 
     def get_phones(self):
@@ -104,6 +109,18 @@ class Phone(Field):
   
     def get_phone(self):
         return self.value
+    
+    def __eq__(self, phone):
+        # print(f'Phone type {type(phone)}')
+        # print(f'Self type {type(self)}')
+        return self == phone
+        
+    
+    def __str__(self):
+        return str(self.value)
+    
+    def __len__(self):
+        return len(self.value)
 
 class Name(Field):
     def __init__(self, value):
@@ -112,17 +129,29 @@ class Name(Field):
     def get_name(self):
         return self.value
 
+    def __str__(self):
+        return str(self.value)
 
 if __name__ == "__main__":
-    name = Name('Bill')
+    # name = Name('Bill')
     phone = Phone('1234567890')
-    rec = Record(name, phone)
-    ab = AddressBook()
-    ab.add_record(rec)
-    assert isinstance(ab['Bill'], Record)
-    assert isinstance(ab['Bill'].name, Name)
-    assert isinstance(ab['Bill'].phones, list)
-    assert isinstance(ab['Bill'].phones[0], Phone)
-    assert ab['Bill'].phones[0].value == '1234567890'
+    phone2 = Phone('1234567890')
+    phone3 = Phone(phone)
+    # phone4 = Phone('1234567890')
+    # rec = Record(name, phone)
+    # ab = AddressBook()
+    # ab.add_record(rec)
+    # assert isinstance(ab['Bill'], Record)
+    # assert isinstance(ab['Bill'].name, Name)
+    # assert isinstance(ab['Bill'].phones, list)
+    # assert isinstance(ab['Bill'].phones[0], Phone)
+    # assert ab['Bill'].phones[0].value == '1234567890'
+    assert phone == phone2
+    # assert phone == phone3
+    # print(type(phone), type(phone3))
+    # print(type(phone.value))
+    # print(type(phone3.value.value))
     print('All Ok)')
-    print(phone)
+    # print(phone)
+    
+

@@ -29,9 +29,8 @@ def input_error(func):
                 print('Missing argument. Plese wrinte contact\'s name.')
         except KeyError as keyerr:
             print(f'Cannot find such contact. Please check spelling and try again.')
-        except ValueError:
-            if func.__name__ == 'add_contact':
-                print(f'Contact {0} already exist. If you want to change phone number use "change" command.')
+        except ValueError as err:
+            print(err)
         except PhoneNotFoundError:
             print('Phone was not found.')
         except PhoneAlreadyExistsError:

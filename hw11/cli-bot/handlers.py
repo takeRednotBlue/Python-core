@@ -7,7 +7,7 @@ def greet(*_, **__):
 
 @input_error
 def add_contact(args: list, address_book: AddressBook) -> None:
-    name, phone = args[0], args[1]
+    name, phone, birthday = args[0], args[1], args[2]
     if name in address_book:
         # normalize phone before checking in record list because of normalization under the hood of Phone class
         if Phone(phone).get_phone() not in address_book[name].get_phones():
@@ -16,7 +16,7 @@ def add_contact(args: list, address_book: AddressBook) -> None:
         else:
             raise PhoneAlreadyExistsError
     else:
-        record = Record(name, phone)
+        record = Record(name, phone, birthday)
         address_book.add_record(record)
         print(f'Contact \'{name}\' with phone number \'{phone}\' was successfully added.')
 

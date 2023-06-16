@@ -21,6 +21,7 @@
 
 from collections import UserDict
 from datetime import datetime
+import re
 
 
 class PhoneNotFoundError(Exception):
@@ -46,7 +47,7 @@ class Record:
     def __init__(self, name, phone=None, birthday=None):
         self.name = Name(name)
         self.phones = []
-        self.birthday = birthday
+        self.birthday = Birthday(birthday)
         if phone:
             self.add_phone(phone)
 
@@ -94,7 +95,9 @@ class Record:
        return phones_list
     
     def days_to_birthday(self):
-        pass
+        today = datetime.now().date()
+        difference = self.birthday.value.replace(year=today.year) - today  
+        return difference.days
     
 
 class Field:
@@ -164,13 +167,44 @@ class Birthday(Field):
         super().__init__(value)
     
     @Field.value.setter
-    def value(self):
-        pass
+    def value(self, date):
+        birthday = self.date_to_datetime(date)
+        approx_age = datetime.now().year - birthday.year
+        if 1 <= approx_age <= 120:
+            self._value = birthday
+        else:
+            raise ValueError('Invalid date format.')
+
+    def date_to_datetime(self, date):
+        '''
+        Available formats: '12.03.2023', '12/14/2023', '12.03.23', '12/03/23', '2023-03-12'
+        '''
+        date_mapping = {
+                r'\d{2}\.\d{2}\.\d{4}': '%d.%m.%Y',
+                r'\d{2}/\d{2}/\d{4}': '%d/%m/%Y',
+                r'\d{2}\.\d{2}\.\d{2}': '%d.%m.%y',
+                r'\d{2}/\d{2}/\d{2}': '%d/%m/%y',
+                r'\d{4}-\d{2}-\d{2}': '%Y-%m-%d',
+        }
+
+        for pattern, format in date_mapping.items():
+            if re.match(pattern, date):
+                try:
+                    date_obj = datetime.strptime(date, format).date()
+                    return date_obj
+                except ValueError:
+                    print('Invalid date format.')
+        else:
+             raise ValueError('Invalid date format.')
+        
+    def get_birthday(self):
+        return self.value.strftime('%d.%m.%Y')
+        
     
 
 if __name__ == "__main__":
-    name = Name('Bill')
-    name2 = Name('1John')
+    # name = Name('Bill')
+    # name2 = Name('1John')
     # phone = Phone('0234567890')
     # phone2 = Phone('234567890')
     # rec = Record(name, phone)
@@ -184,10 +218,15 @@ if __name__ == "__main__":
     # assert phone == phone2
     # print(phone)
     # print(phone2)
-    print(name)
-    print(name2)
-    print('All Ok)')
+    # print(name)
+    # print(name2)
+    # print('All Ok)')
     # print(phone)
 
-    
+    record = Record('Maxym', birthday='10.08.1996')
 
+    print(record.days_to_birthday())
+
+    to_birthday = datetime(year=2023, month=8, day=10).date() - datetime.now().date()
+    print(to_birthday.days)
+    

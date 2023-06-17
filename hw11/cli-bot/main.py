@@ -29,6 +29,25 @@ from pathlib import Path
 from commands_parser import commands_parser
 from handlers import *
 
+max = Record(Name('Max'), Phone('0933434459'))
+valera = Record(Name('Valera'), Phone('0933434459'))
+anton = Record(Name('Anton'), Phone('0933434459'))
+vlad = Record(Name('Vlad'), Phone('0933434459'))
+yura = Record(Name('Yura'), Phone('0933434459'))
+sasha = Record(Name('Sasha'), Phone('0933434459'))
+bogdan = Record(Name('Bogdan'), Phone('0933434459'))
+valentun = Record(Name('Valentun'), Phone('0933434459'))
+tolya = Record(Name('Tolya'), Phone('0933434459'))
+
+ab = AddressBook()
+ab.add_record(max)
+ab.add_record(valera)
+ab.add_record(vlad)
+ab.add_record(yura)
+ab.add_record(sasha)
+ab.add_record(bogdan)
+ab.add_record(valentun)
+ab.add_record(tolya)
 
 COMMANDS = {
     'hello': greet,
@@ -54,7 +73,8 @@ def main():
     #     contacts_book_file.touch()
     #     address_book = {}
 
-    address_book = AddressBook()
+    # address_book = AddressBook()
+    address_book = ab
     is_working = True
 
     print('Hello, I\'m your personal bot-assistant.')

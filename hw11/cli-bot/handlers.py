@@ -7,16 +7,21 @@ def greet(*_, **__):
 
 @input_error
 def add_contact(args: list, address_book: AddressBook) -> None:
-    name, phone, birthday = args[0], args[1], args[2]
-    if name in address_book:
+    if len(args) > 2:
+        name, phone, birthday = Name(args[0]), Phone(args[1]), Birthday(args[2])
+    name, phone = Name(args[0]), Phone(args[1])
+    
+    if name.value in address_book:
         # normalize phone before checking in record list because of normalization under the hood of Phone class
-        if Phone(phone).get_phone() not in address_book[name].get_phones():
-            address_book[name].add_phone(phone)
+        if phone not in address_book[name.value].phones:
+            address_book[name.value].add_phone(phone)
             print(f'Phone \'{phone}\' was successfully added to the contact \'{name}\'.')
         else:
             raise PhoneAlreadyExistsError
     else:
-        record = Record(name, phone, birthday)
+        if len(args) > 2:
+            record = Record(name, phone, birthday)
+        record = Record(name, phone)
         address_book.add_record(record)
         print(f'Contact \'{name}\' with phone number \'{phone}\' was successfully added.')
 
@@ -24,8 +29,8 @@ def add_contact(args: list, address_book: AddressBook) -> None:
 def remove_contact(args: list, address_book: AddressBook) -> None:
     name = args[0]
     # can take phone as second argument to remove it from contact
-    if args [1]:
-        phone = args[1]
+    if len(args) >= 2:
+        phone = Phone(args[1])
         address_book[name].remove_phone(phone)
         print(f'Phone number \'{phone}\' from contact \'{name}\' was successfully removed.')
     else:
@@ -35,7 +40,7 @@ def remove_contact(args: list, address_book: AddressBook) -> None:
     
 @input_error
 def change_number(args: list, address_book: AddressBook) -> None:
-    name, phone, new_phone = args[0], args[1], args[2]
+    name, phone, new_phone = args[0], Phone(args[1]), Phone(args[2])
     address_book[name].change_phone(phone, new_phone)
     print(f'\'{name}\' phone number \'{phone}\' was successfully changed to \'{new_phone}\'.')
     
@@ -55,23 +60,29 @@ def show_whole_contacts_book(_, address_book: AddressBook) -> None:
     print('='*59)
     
     if address_book:
-        for name, record in address_book.items():
-            phones = record.get_phones()
-            # handle contact's multiple phones
-            if len(phones) == 1: 
-                print('|{:>4} |{:^20}|{:^30}|'.format(count, name, phones[0]))
-            elif  len(phones) > 1:
-                print('|{:>4} |{:^20}|{:^30}|'.format(count, name, phones[0]))
-                for phone in phones[1:]:
-                    print('|{0:>4} |{0:^20}|{1:^30}|'.format('', phone))
-            else:
-                print('|{:>4} |{:^20}|{:^30}|'.format(count, name, 'No phones'))
+        for page in address_book:
+            for name, record in page:
+                phones = record.get_phones()
+                # handle contact's multiple phones
+                if len(phones) == 1: 
+                    print('|{:>4} |{:^20}|{:^30}|'.format(count, name, phones[0]))
+                elif  len(phones) > 1:
+                    print('|{:>4} |{:^20}|{:^30}|'.format(count, name, phones[0]))
+                    for phone in phones[1:]:
+                        print('|{0:>4} |{0:^20}|{1:^30}|'.format('', phone))
+                else:
+                    print('|{:>4} |{:^20}|{:^30}|'.format(count, name, 'No phones'))
+                print('='*59)
 
-            count += 1
+                count += 1
+            if len(page) == address_book.pagination:   
+                user_check = input('Press enter to see the next page.')
+                # user_check = input('Do you wanna see next page? (Y/n) ')
+                # if user_check == 'n':
+                #     break
     else:
         print('|{0:>4} |{1:^20}|{0:^30}|'.format('', 'No entries'))
 
-    print('='*59)
     
 def exit_bot():
     print('I\'ll miss you so much!')

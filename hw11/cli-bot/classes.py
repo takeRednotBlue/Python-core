@@ -31,8 +31,24 @@ class PhoneAlreadyExistsError(Exception):
     pass
 
 class AddressBook(UserDict):
-    def __init__(self):
+    def __init__(self, pagination=5):
         super().__init__()
+        self.__pagination = None
+        self.pagination = pagination
+        self.start_index = 0
+        self.end_index = self.pagination
+
+    @property
+    def pagination(self):
+        return self.__pagination
+    
+    @pagination.setter
+    def pagination(self, number):
+        try:
+            self.__pagination = int(number)
+        except ValueError:
+            print('Pagination number must be an integer.')
+
 
     def add_record(self, record):
         self.data.update({
@@ -41,19 +57,33 @@ class AddressBook(UserDict):
     
     def remove_record(self, name):
         self.data.pop(name)
-      
+
+    def __next__(self):
+        sorted_data = sorted(self.data.items())
+        result = sorted_data[self.start_index:self.end_index]
+        if not result:
+            self.start_index = 0
+            self.end_index = self.pagination
+            raise StopIteration
+        else:
+            self.start_index += self.pagination
+            self.end_index += self.pagination
+            return result
+
+    def __iter__(self):
+        return self
+    
 
 class Record:
     def __init__(self, name, phone=None, birthday=None):
-        self.name = Name(name)
+        self.name = name
         self.phones = []
-        self.birthday = Birthday(birthday)
+        self.birthday = birthday
         if phone:
             self.add_phone(phone)
 
     def add_phone(self, phone):
-        phone = Phone(phone)
-        if phone.get_phone() not in self.get_phones():
+        if phone not in self.phones:
             self.phones.append(phone)
         else:
             raise PhoneAlreadyExistsError
@@ -61,30 +91,16 @@ class Record:
     def change_phone(self, phone, new_phone):
         phone = Phone(phone)
         new_phone = Phone(new_phone)
-        changed = False
-
-        for item in self.phones:
-            if phone.get_phone() == item.get_phone():
-                item_pos = self.phones.index(item)
-                self.phones.insert(item_pos, new_phone)
-                self.phones.remove(item)
-                changed = True
-
-        if not changed:
+        
+        if phone in self.phones:
+            phone_pos = self.phones.index(phone)
+            self.phones.insert(phone_pos, new_phone)
+            self.phones.remove(phone)
+        else:
             raise PhoneNotFoundError
         
     def remove_phone(self, phone):
-        phone = Phone(phone)
-        # removed = False
 
-        # for item in self.phones:
-        #     if phone.get_phone() == item.get_phone():
-        #         self.phones.remove(item)
-        #         removed = True
-
-        # if not removed:
-        #     raise PhoneNotFoundError
-            
         if phone in self.phones:
             self.phones.remove(phone)
         else:
@@ -96,7 +112,9 @@ class Record:
     
     def days_to_birthday(self):
         today = datetime.now().date()
-        difference = self.birthday.value.replace(year=today.year) - today  
+        difference = self.birthday.value.replace(year=today.year) - today
+        if difference.days < 0:
+            difference = self.birthday.value.replace(year=today.year+1) - today
         return difference.days
     
 
@@ -114,6 +132,8 @@ class Field:
         self._value = new_value
 
     def __eq__(self, other):
+        if type(other) == str:
+            other = Phone(other)          
         return self.value == other.value
             
     def __str__(self):
@@ -152,7 +172,7 @@ class Name(Field):
         super().__init__(value)
 
     @Field.value.setter
-    def value(self, name: str):
+    def value(self, name):
         if len(name) >= 3 and name[0].isalpha():
             self._value = name
         else:
@@ -205,8 +225,9 @@ class Birthday(Field):
 if __name__ == "__main__":
     # name = Name('Bill')
     # name2 = Name('1John')
-    # phone = Phone('0234567890')
-    # phone2 = Phone('234567890')
+    phone = Phone('0234567890')
+    phone2 = Phone('0932567890')
+    phone3 = Phone('0932567891')
     # rec = Record(name, phone)
     # ab = AddressBook()
     # ab.add_record(rec)
@@ -223,10 +244,36 @@ if __name__ == "__main__":
     # print('All Ok)')
     # print(phone)
 
-    record = Record('Maxym', birthday='10.08.1996')
+    # record = Record('Maxym', birthday='10.08.1996')
 
-    print(record.days_to_birthday())
+    # print(record.days_to_birthday())
 
-    to_birthday = datetime(year=2023, month=8, day=10).date() - datetime.now().date()
-    print(to_birthday.days)
+    # to_birthday = datetime(year=2023, month=6, day=17).date() - datetime.now().date()
+    # print(to_birthday.days)
+
+    test_list = [phone, phone2, phone3]
+
+    print(test_list.index('0932567890'))
+
+max = Record(Name('Max'), Phone('0933434459'))
+valera = Record(Name('Valera'), Phone('0933434459'))
+anton = Record(Name('Anton'), Phone('0933434459'))
+vlad = Record(Name('Vlad'), Phone('0933434459'))
+yura = Record(Name('Yura'), Phone('0933434459'))
+sasha = Record(Name('Sasha'), Phone('0933434459'))
+bogdan = Record(Name('Bogdan'), Phone('0933434459'))
+valentun = Record(Name('Valentun'), Phone('0933434459'))
+tolya = Record(Name('Tolya'), Phone('0933434459'))
+
+ab = AddressBook()
+ab.add_record(max)
+ab.add_record(valera)
+ab.add_record(vlad)
+ab.add_record(yura)
+ab.add_record(sasha)
+ab.add_record(bogdan)
+ab.add_record(valentun)
+ab.add_record(tolya)
+
+
     

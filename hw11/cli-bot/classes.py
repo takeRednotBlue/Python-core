@@ -31,24 +31,8 @@ class PhoneAlreadyExistsError(Exception):
     pass
 
 class AddressBook(UserDict):
-    def __init__(self, pagination=5):
+    def __init__(self):
         super().__init__()
-        self.__pagination = None
-        self.pagination = pagination
-        self.start_index = 0
-        self.end_index = self.pagination
-
-    @property
-    def pagination(self):
-        return self.__pagination
-    
-    @pagination.setter
-    def pagination(self, number):
-        try:
-            self.__pagination = int(number)
-        except ValueError:
-            print('Pagination number must be an integer.')
-
 
     def add_record(self, record):
         self.data.update({
@@ -60,12 +44,10 @@ class AddressBook(UserDict):
     
     def iterator(self, number=5):
         sorted_data = sorted(self.data.items())
-        index_start = 0
-        index_end = number
-        while index_start < len(sorted_data):
-            yield sorted_data[index_start:index_end]
-            index_start += number
-            index_end += number
+        index = 0
+        while index < len(sorted_data):
+            yield sorted_data[index:index+number]
+            index += number
     
 
 class Record:
@@ -97,7 +79,7 @@ class Record:
             raise PhoneNotFoundError
 
     def get_phones(self):
-       phones_list = [phone.get_phone() for phone in self.phones]
+       phones_list = [phone.value for phone in self.phones]
        return phones_list
     
     def days_to_birthday(self):
@@ -108,7 +90,7 @@ class Record:
                 difference = self.birthday.value.replace(year=today.year+1) - today
             return difference.days
         else:
-            raise ValueError('Contact\'s birhday hasn\'t set yet.')
+            raise ValueError('Contact\'s birthday hasn\'t set yet.')
     
 
 class Field:
@@ -133,14 +115,13 @@ class Field:
     def __len__(self):
         return len(self.value)
     
-
-
+    
 class Phone(Field):
     def __init__(self, value):
         super().__init__(value)
 
     @Field.value.setter
-    def value(self, phone: str):
+    def value(self, phone):
         if phone.isnumeric():
             if len(phone) == 12 and phone.startswith('380'):
                 self._value = '+' + phone
@@ -156,7 +137,6 @@ class Phone(Field):
     def get_phone(self):
         return self.value
     
-    
 
 class Name(Field):
     def __init__(self, value):
@@ -167,7 +147,7 @@ class Name(Field):
         if len(name) >= 3 and name[0].isalpha():
             self._value = name
         else:
-            raise ValueError('Invalid name. Name must start from letter and has length at least 3.')      
+            raise ValueError('Invalid name. Name must start from letter and has at least 3 symbols.')      
 
     def get_name(self):
         return self.value
@@ -179,14 +159,14 @@ class Birthday(Field):
     
     @Field.value.setter
     def value(self, date):
-        birthday = self.date_to_datetime(date)
+        birthday = self.date_converter(date)
         approx_age = datetime.now().year - birthday.year
         if 1 <= approx_age <= 120:
             self._value = birthday
         else:
             raise ValueError('Invalid date format.')
 
-    def date_to_datetime(self, date):
+    def date_converter(self, date):
         '''
         Available formats: '12.03.2023', '12/14/2023', '12.03.23', '12/03/23', '2023-03-12'
         '''
@@ -197,7 +177,7 @@ class Birthday(Field):
                 r'\d{2}/\d{2}/\d{2}': '%d/%m/%y',
                 r'\d{4}-\d{2}-\d{2}': '%Y-%m-%d',
         }
-
+        
         for pattern, format in date_mapping.items():
             if re.match(pattern, date):
                 try:
@@ -243,7 +223,6 @@ if __name__ == "__main__":
     # print(phone2)
     # print(name)
     # print(name2)
-    # print('All Ok)')
     # print(phone)
 
     # record = Record('Maxym', birthday='10.08.1996')
@@ -252,6 +231,10 @@ if __name__ == "__main__":
 
     # to_birthday = datetime(year=2023, month=6, day=17).date() - datetime.now().date()
     # print(to_birthday.days)
+
+    assert Birthday("10.03.2023")
+    print('All Ok)')
+
 
 
     

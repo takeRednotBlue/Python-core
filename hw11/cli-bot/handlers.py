@@ -23,16 +23,16 @@ def add_contact(args: list, address_book: AddressBook) -> None:
             record = Record(name, phone, birthday)
         record = Record(name, phone)
         address_book.add_record(record)
-        print(f'Contact \'{name}\' with phone number \'{phone}\' was successfully added.')
+        print(f'Contact was successfully added.')
 
 @input_error
 def birthday_handler(args: list, address_book: AddressBook) -> None:
     if len(args) >= 2:
         name, birthday = args[0], Birthday(args[1])
-        if address_book[name].birthday:
+        if address_book[name].birthday != None:
             user_input = input(f'Do you wanna chage birthday date for \'{name}\'? (y/N)')
             if user_input == 'y':
-                address_book[name].birthday.value = birthday
+                address_book[name].birthday = birthday
                 print('Birthday date was successfully changed.')
         else:
             address_book[name].birthday = birthday
@@ -45,11 +45,11 @@ def birthday_handler(args: list, address_book: AddressBook) -> None:
 @input_error
 def remove_contact(args: list, address_book: AddressBook) -> None:
     name = args[0]
-    # can take phone as second argument to remove it from contact
+    # takes phone as second argument to remove it from contact
     if len(args) >= 2:
         phone = Phone(args[1])
         address_book[name].remove_phone(phone)
-        print(f'Phone number \'{phone}\' from contact \'{name}\' was successfully removed.')
+        print(f'Phone number \'{phone}\' was successfully removed.')
     else:
         address_book.remove_record(name)
         print(f'Contact \'{name}\' was successfully removed.')
@@ -59,7 +59,7 @@ def remove_contact(args: list, address_book: AddressBook) -> None:
 def change_number(args: list, address_book: AddressBook) -> None:
     name, phone, new_phone = args[0], Phone(args[1]), Phone(args[2])
     address_book[name].change_phone(phone, new_phone)
-    print(f'\'{name}\' phone number \'{phone}\' was successfully changed to \'{new_phone}\'.')
+    print(f'Phone number \'{phone}\' was successfully changed to \'{new_phone}\'.')
     
 
 @input_error
@@ -99,8 +99,8 @@ def show_whole_contacts_book(_, address_book: AddressBook) -> None:
                 count += 1
             if len(page) == 5:   
                 # user_check = input('Press enter to see the next page.')
-                user_check = input('Do you wanna see next page? (Y/n) ')
-                if user_check == 'n':
+                user_input = input('Do you wanna see next page? (Y/n) ')
+                if user_input == 'n':
                     break
     else:
         print('|{0:>4} |{1:^20}|{0:^30}|'.format('', 'No entries'))
@@ -118,7 +118,7 @@ or data coruption. Don't terminate bot with CTRL+C combination because all unsav
 Available commands:
     - hello                                 Greet user
     - add <name> <phone>                    Add a new contact
-    - birthday <date>(opt)                  Set birthday date or shows how many days to birthday
+    - birthday <date>(opt)                  Shows how many days to birthday or set birthday date 
     - change <name> <phone> <new_phone>     Change the phone number of an existing contact
     - remove <name> <phone>(opt)            Remove contact or phone number if phone was given
     - phone <name>                          Get the phone numbers

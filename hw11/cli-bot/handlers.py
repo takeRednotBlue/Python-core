@@ -26,6 +26,23 @@ def add_contact(args: list, address_book: AddressBook) -> None:
         print(f'Contact \'{name}\' with phone number \'{phone}\' was successfully added.')
 
 @input_error
+def birthday_handler(args: list, address_book: AddressBook) -> None:
+    if len(args) >= 2:
+        name, birthday = args[0], Birthday(args[1])
+        if address_book[name].birthday:
+            user_input = input(f'Do you wanna chage birthday date for \'{name}\'? (y/N)')
+            if user_input == 'y':
+                address_book[name].birthday.value = birthday
+                print('Birthday date was successfully changed.')
+        else:
+            address_book[name].birthday = birthday
+            print('Birthday date was successfully set.')
+    else:
+        name = args[0]
+        days_to_birthday = address_book[name].days_to_birthday()
+        print(f'{days_to_birthday} days to \'{name}\' birthday.')
+
+@input_error
 def remove_contact(args: list, address_book: AddressBook) -> None:
     name = args[0]
     # can take phone as second argument to remove it from contact
@@ -50,7 +67,12 @@ def show_contact_numbers(args: list, address_book: AddressBook) -> None:
     name = args[0]
     phones = address_book[name].get_phones()
     phones_str = ', '.join(phones)
-    print(f'\'{name}\' phone numbers are \'{phones_str}\'.')
+    if not phones:
+        print(f'\'{name}\' doesn\'t have phone numbers.')
+    elif len(phones) == 1:
+        print(f'\'{name}\' phone number: \'{phones_str}\'.')
+    else:
+        print(f'\'{name}\' phone numbers: \'{phones_str}\'.')
   
 
 def show_whole_contacts_book(_, address_book: AddressBook) -> None:
@@ -60,7 +82,7 @@ def show_whole_contacts_book(_, address_book: AddressBook) -> None:
     print('='*59)
     
     if address_book:
-        for page in address_book:
+        for page in address_book.iterator():
             for name, record in page:
                 phones = record.get_phones()
                 # handle contact's multiple phones
@@ -75,11 +97,11 @@ def show_whole_contacts_book(_, address_book: AddressBook) -> None:
                 print('='*59)
 
                 count += 1
-            if len(page) == address_book.pagination:   
-                user_check = input('Press enter to see the next page.')
-                # user_check = input('Do you wanna see next page? (Y/n) ')
-                # if user_check == 'n':
-                #     break
+            if len(page) == 5:   
+                # user_check = input('Press enter to see the next page.')
+                user_check = input('Do you wanna see next page? (Y/n) ')
+                if user_check == 'n':
+                    break
     else:
         print('|{0:>4} |{1:^20}|{0:^30}|'.format('', 'No entries'))
 
@@ -96,6 +118,7 @@ or data coruption. Don't terminate bot with CTRL+C combination because all unsav
 Available commands:
     - hello                                 Greet user
     - add <name> <phone>                    Add a new contact
+    - birthday <date>(opt)                  Set birthday date or shows how many days to birthday
     - change <name> <phone> <new_phone>     Change the phone number of an existing contact
     - remove <name> <phone>(opt)            Remove contact or phone number if phone was given
     - phone <name>                          Get the phone numbers

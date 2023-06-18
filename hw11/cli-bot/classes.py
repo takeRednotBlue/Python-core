@@ -57,21 +57,15 @@ class AddressBook(UserDict):
     
     def remove_record(self, name):
         self.data.pop(name)
-
-    def __next__(self):
+    
+    def iterator(self, number=5):
         sorted_data = sorted(self.data.items())
-        result = sorted_data[self.start_index:self.end_index]
-        if not result:
-            self.start_index = 0
-            self.end_index = self.pagination
-            raise StopIteration
-        else:
-            self.start_index += self.pagination
-            self.end_index += self.pagination
-            return result
-
-    def __iter__(self):
-        return self
+        index_start = 0
+        index_end = number
+        while index_start < len(sorted_data):
+            yield sorted_data[index_start:index_end]
+            index_start += number
+            index_end += number
     
 
 class Record:
@@ -88,10 +82,7 @@ class Record:
         else:
             raise PhoneAlreadyExistsError
 
-    def change_phone(self, phone, new_phone):
-        phone = Phone(phone)
-        new_phone = Phone(new_phone)
-        
+    def change_phone(self, phone, new_phone):      
         if phone in self.phones:
             phone_pos = self.phones.index(phone)
             self.phones.insert(phone_pos, new_phone)
@@ -100,7 +91,6 @@ class Record:
             raise PhoneNotFoundError
         
     def remove_phone(self, phone):
-
         if phone in self.phones:
             self.phones.remove(phone)
         else:
@@ -111,11 +101,14 @@ class Record:
        return phones_list
     
     def days_to_birthday(self):
-        today = datetime.now().date()
-        difference = self.birthday.value.replace(year=today.year) - today
-        if difference.days < 0:
-            difference = self.birthday.value.replace(year=today.year+1) - today
-        return difference.days
+        if self.birthday != None:
+            today = datetime.now().date()
+            difference = self.birthday.value.replace(year=today.year) - today
+            if difference.days < 0:
+                difference = self.birthday.value.replace(year=today.year+1) - today
+            return difference.days
+        else:
+            raise ValueError('Contact\'s birhday hasn\'t set yet.')
     
 
 class Field:
@@ -131,9 +124,7 @@ class Field:
     def value(self, new_value):
         self._value = new_value
 
-    def __eq__(self, other):
-        if type(other) == str:
-            other = Phone(other)          
+    def __eq__(self, other):         
         return self.value == other.value
             
     def __str__(self):
@@ -218,7 +209,18 @@ class Birthday(Field):
              raise ValueError('Invalid date format.')
         
     def get_birthday(self):
+        return str(self.value)
+    
+    def __str__(self):
         return self.value.strftime('%d.%m.%Y')
+    
+    def __eq__(self, other):
+        if other == None:
+            return False
+        return str(self.value) == str(other.value)
+    
+    def __len__(self):
+        pass
         
     
 
@@ -250,30 +252,6 @@ if __name__ == "__main__":
 
     # to_birthday = datetime(year=2023, month=6, day=17).date() - datetime.now().date()
     # print(to_birthday.days)
-
-    test_list = [phone, phone2, phone3]
-
-    print(test_list.index('0932567890'))
-
-max = Record(Name('Max'), Phone('0933434459'))
-valera = Record(Name('Valera'), Phone('0933434459'))
-anton = Record(Name('Anton'), Phone('0933434459'))
-vlad = Record(Name('Vlad'), Phone('0933434459'))
-yura = Record(Name('Yura'), Phone('0933434459'))
-sasha = Record(Name('Sasha'), Phone('0933434459'))
-bogdan = Record(Name('Bogdan'), Phone('0933434459'))
-valentun = Record(Name('Valentun'), Phone('0933434459'))
-tolya = Record(Name('Tolya'), Phone('0933434459'))
-
-ab = AddressBook()
-ab.add_record(max)
-ab.add_record(valera)
-ab.add_record(vlad)
-ab.add_record(yura)
-ab.add_record(sasha)
-ab.add_record(bogdan)
-ab.add_record(valentun)
-ab.add_record(tolya)
 
 
     

@@ -35,7 +35,7 @@ anton = Record(Name('Anton'), Phone('0933434459'))
 vlad = Record(Name('Vlad'), Phone('0933434459'))
 yura = Record(Name('Yura'), Phone('0933434459'))
 sasha = Record(Name('Sasha'), Phone('0933434459'))
-bogdan = Record(Name('Bogdan'), Phone('0933434459'))
+bogdan = Record(Name('Bogdan'), Phone('0933434459'), Birthday("26.06.1996"))
 valentun = Record(Name('Valentun'), Phone('0933434459'))
 tolya = Record(Name('Tolya'), Phone('0933434459'))
 
@@ -57,6 +57,7 @@ COMMANDS = {
     'phone': show_contact_numbers,
     'show all': show_whole_contacts_book,
     'help': get_help,
+    'birthday': birthday_handler,
 }
 
 END_COMMANS = ['exit', 'good bye', 'close']

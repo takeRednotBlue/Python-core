@@ -18,6 +18,8 @@ HAS_ONLY_NAME_ARG = [
     "show_contact_number",
 ]
 
+HAS_NAME_AND_TWO_PHONES_ARGS = ['change_number']
+
 def input_error(func):
     def wrapper(*args):
         try:
@@ -25,6 +27,8 @@ def input_error(func):
         except IndexError as inderr:
             if func.__name__ in HAS_NAME_AND_PHONE_ARGS:
                 print('Missing arguments. Please write name and phone number.')
+            elif func.__name__ in HAS_NAME_AND_TWO_PHONES_ARGS:
+                print('Missing arguments. Please write name, phone to be changed and new phone.')
             elif func.__name__ in HAS_ONLY_NAME_ARG:
                 print('Missing argument. Plese wrinte contact\'s name.')
         except KeyError as keyerr:

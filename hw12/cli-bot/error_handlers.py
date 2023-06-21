@@ -31,6 +31,8 @@ def input_error(func):
                 print('Missing arguments. Please write name, phone to be changed and new phone.')
             elif func.__name__ in HAS_ONLY_NAME_ARG:
                 print('Missing argument. Plese wrinte contact\'s name.')
+            else:
+                print('Missing arguments.')
         except KeyError as keyerr:
             print(f'Cannot find such contact. Please check spelling and try again.')
         except ValueError as err:

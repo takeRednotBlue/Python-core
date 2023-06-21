@@ -24,30 +24,30 @@
   """
 
 
-import json
+# import json
 from pathlib import Path
 from commands_parser import commands_parser
 from handlers import *
 
-max = Record(Name('Max'), Phone('0933434459'))
-valera = Record(Name('Valera'), Phone('0933434459'))
-anton = Record(Name('Anton'), Phone('0933434459'))
-vlad = Record(Name('Vlad'), Phone('0933434459'))
-yura = Record(Name('Yura'), Phone('0933434459'))
-sasha = Record(Name('Sasha'), Phone('0933434459'))
-bogdan = Record(Name('Bogdan'), Phone('0933434459'), Birthday("26.06.1996"))
-valentun = Record(Name('Valentun'), Phone('0933434459'))
-tolya = Record(Name('Tolya'), Phone('0933434459'))
+# max = Record(Name('Max'), Phone('0933434459'))
+# valera = Record(Name('Valera'), Phone('0933434459'))
+# anton = Record(Name('Anton'), Phone('0933434459'))
+# vlad = Record(Name('Vlad'), Phone('0933434459'))
+# yura = Record(Name('Yura'), Phone('0933434459'))
+# sasha = Record(Name('Sasha'), Phone('0933434459'))
+# bogdan = Record(Name('Bogdan'), Phone('0933434459'), Birthday("26.06.1996"))
+# valentun = Record(Name('Valentun'), Phone('0933434459'))
+# tolya = Record(Name('Tolya'), Phone('0933434459'))
 
-ab = AddressBook('ab.bin')
-ab.add_record(max)
-ab.add_record(valera)
-ab.add_record(vlad)
-ab.add_record(yura)
-ab.add_record(sasha)
-ab.add_record(bogdan)
-ab.add_record(valentun)
-ab.add_record(tolya)
+# ab = AddressBook('ab.bin')
+# ab.add_record(max)
+# ab.add_record(valera)
+# ab.add_record(vlad)
+# ab.add_record(yura)
+# ab.add_record(sasha)
+# ab.add_record(bogdan)
+# ab.add_record(valentun)
+# ab.add_record(tolya)
 
 COMMANDS = {
     'hello': greet,
@@ -58,6 +58,8 @@ COMMANDS = {
     'show all': show_whole_contacts_book,
     'help': get_help,
     'birthday': birthday_handler,
+    'find': find_contacts,
+    'clear': clear_book,
 }
 
 END_COMMANS = ['exit', 'good bye', 'close']

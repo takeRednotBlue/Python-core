@@ -57,6 +57,19 @@ class AddressBook(UserDict):
             book = pickle.load(fh)
         return book
 
+    def find(self, search_string):
+        search_result = []
+        for name, record in self.data.items():
+            if search_string.lower() in name.lower():
+                search_result.append(self.data[name])
+            else:
+                for phone in record.get_phones():
+                    if search_string.lower() in phone.lower():
+                        search_result.append(self.data[name])
+                        break
+        return search_result
+                        
+                
 
 class Record:
     def __init__(self, name, phone=None, birthday=None):
@@ -99,6 +112,15 @@ class Record:
             return difference.days
         else:
             raise ValueError('Contact\'s birthday hasn\'t set yet.')
+        
+    
+    def __repr__(self):
+        attr_dict = {
+            'name': self.name,
+            'phones': self.phones,
+            'birthday': self.birthday,
+        }
+        return f'RecordObject({attr_dict})'
     
 
 class Field:
@@ -114,10 +136,16 @@ class Field:
     def value(self, new_value):
         self._value = new_value
 
-    def __eq__(self, other):         
-        return self.value == other.value
+    def __eq__(self, other):
+        if other == None:
+            return False
+        return str(self.value) == str(other.value)
             
     def __str__(self):
+        return str(self.value)
+    
+    def __repr__(self):
+        # return f'{self.__class__.__name__}Object({self.value})'
         return str(self.value)
     
     def __len__(self):
@@ -202,11 +230,12 @@ class Birthday(Field):
     def __str__(self):
         return self.value.strftime('%d.%m.%Y')
     
-    def __eq__(self, other):
-        if other == None:
+    def __bool__(self):
+        if self.value == None:
             return False
-        return str(self.value) == str(other.value)
-    
+        else:
+            return True
+       
     def __len__(self):
         pass
         
@@ -233,11 +262,12 @@ if __name__ == "__main__":
     ab.add_record(valentun)
     ab.add_record(tolya)
 
-    ab.save_to_file()
-    print('Saved')
-    loaded_ab = ab.read_from_file()
-    bd_days = loaded_ab['Bogdan'].days_to_birthday()
-    print(f'There is {bd_days} days to Bogdan\'s birthday.')
+    # ab.save_to_file()
+    # print('Saved')
+    # loaded_ab = ab.read_from_file()
+    # bd_days = loaded_ab['Bogdan'].days_to_birthday()
+    # print(f'There is {bd_days} days to Bogdan\'s birthday.')
+    print(ab)
 
 
     print('All Ok)')

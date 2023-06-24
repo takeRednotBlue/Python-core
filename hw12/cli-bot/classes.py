@@ -57,17 +57,17 @@ class AddressBook(UserDict):
             book = pickle.load(fh)
         return book
 
-    def find(self, search_string):
-        search_result = []
+    def find(self, lookup_string):
+        result = []
         for name, record in self.data.items():
-            if search_string.lower() in name.lower():
-                search_result.append(self.data[name])
+            if lookup_string.lower() in name.lower():
+                result.append((name, record))
             else:
                 for phone in record.get_phones():
-                    if search_string.lower() in phone.lower():
-                        search_result.append(self.data[name])
+                    if lookup_string.lower() in phone.lower():
+                        result.append((name, record))
                         break
-        return search_result
+        return result
                         
                 
 
@@ -111,7 +111,7 @@ class Record:
                 difference = self.birthday.value.replace(year=today.year+1) - today
             return difference.days
         else:
-            raise ValueError('Contact\'s birthday hasn\'t set yet.')
+            raise ValueError('Birthday is not set.')
         
     
     def __repr__(self):
@@ -195,14 +195,19 @@ class Birthday(Field):
     
     @Field.value.setter
     def value(self, date):
-        birthday = self.date_converter(date)
+        try:
+            format = self.format_mapper(date)
+            birthday = datetime.strptime(date, format).date()
+        except:
+            raise ValueError('Invalid date format.')
+        
         approx_age = datetime.now().year - birthday.year
-        if 1 <= approx_age <= 120:
+        if 0 <= approx_age <= 120:
             self._value = birthday
         else:
-            raise ValueError('Invalid date format.')
+            raise ValueError('Invalid date. Age must be in range from 0 to 120 years.')
 
-    def date_converter(self, date):
+    def format_mapper(self, date):
         '''
         Available formats: '12.03.2023', '12/14/2023', '12.03.23', '12/03/23', '2023-03-12'
         '''
@@ -216,11 +221,7 @@ class Birthday(Field):
         
         for pattern, format in date_mapping.items():
             if re.match(pattern, date):
-                try:
-                    date_obj = datetime.strptime(date, format).date()
-                    return date_obj
-                except ValueError:
-                    print('Invalid date format.')
+                return format
         else:
              raise ValueError('Invalid date format.')
         

@@ -1,5 +1,6 @@
 from classes import *
 from error_handlers import input_error
+from table_constructor import table_header, print_contact, table_row
 
 
 def greet(*_, **__):
@@ -30,7 +31,7 @@ def birthday_handler(args: list, address_book: AddressBook) -> None:
     name = args[0]
     if len(args) >= 2:
         birthday = Birthday(args[1])
-        if address_book[name].birthday != None:
+        if address_book[name].birthday:
             user_input = input(f'Do you wanna chage birthday date for \'{name}\'? (y/N) ')
             if user_input == 'y':
                 address_book[name].birthday = birthday
@@ -77,71 +78,45 @@ def show_contact_numbers(args: list, address_book: AddressBook) -> None:
 @input_error
 def find_contacts(args: list, address_book: AddressBook) -> None:
     search_string = args[0]
-    search_result = sorted(address_book.find(search_string), key=lambda x: x.name.value)
+    search_result = sorted(address_book.find(search_string))
 
+    row_length = table_header()
     count = 1
-    print('='*59)
-    print('|{:^5}|{:^20}|{:^30}|'.format('N', 'Name', 'Phone numbers'))
-    print('='*59)
-
     if search_result:
-        for record in search_result:
-            phones = record.get_phones()
-            # handle contact's multiple phones
-            if len(phones) == 1: 
-                print('|{:>4} |{:^20}|{:^30}|'.format(count, record.name.value, phones[0]))
-            elif  len(phones) > 1:
-                print('|{:>4} |{:^20}|{:^30}|'.format(count, record.name.value, phones[0]))
-                for phone in phones[1:]:
-                    print('|{0:>4} |{0:^20}|{1:^30}|'.format('', phone))
-            else:
-                print('|{:>4} |{:^20}|{:^30}|'.format(count, record.name.value, 'No phones'))
-            print('='*59)
-
+        for name, record in search_result:
+            print_contact(count, name, record, row_length)
             count += 1
     else:
-        print('|{0:>4} |{1:^20}|{0:^30}|'.format('', 'No matches'))
-        print('='*59)
-    
-  
+        print(table_row(phone='No matches'))
+        print('='*row_length)
 
-def show_whole_contacts_book(_, address_book: AddressBook) -> None:
+
+@input_error
+def show_whole_contacts_book(args: list, address_book: AddressBook) -> None:
+    contacts_per_time = int(args[0]) if args else 5
+    row_length = table_header()
     count = 1
-    print('='*59)
-    print('|{:^5}|{:^20}|{:^30}|'.format('N', 'Name', 'Phone numbers'))
-    print('='*59)
-    
-    if address_book:
-        for page in address_book.iterator():
-            for name, record in page:
-                phones = record.get_phones()
-                # handle contact's multiple phones
-                if len(phones) == 1: 
-                    print('|{:>4} |{:^20}|{:^30}|'.format(count, name, phones[0]))
-                elif  len(phones) > 1:
-                    print('|{:>4} |{:^20}|{:^30}|'.format(count, name, phones[0]))
-                    for phone in phones[1:]:
-                        print('|{0:>4} |{0:^20}|{1:^30}|'.format('', phone))
-                else:
-                    print('|{:>4} |{:^20}|{:^30}|'.format(count, name, 'No phones'))
-                print('='*59)
 
+    if address_book:
+        for page in address_book.iterator(contacts_per_time):
+            for name, record in page:
+                print_contact(count, name, record, row_length)
                 count += 1
-            if len(page) == 5:   
-                # user_check = input('Press enter to see the next page.')
+            if len(address_book.keys()) >= count:
                 user_input = input('Do you wanna see the next page? (Y/n) ')
                 if user_input == 'n':
                     break
+                print('='*row_length)
     else:
-        print('|{0:>4} |{1:^20}|{0:^30}|'.format('', 'No entries'))
-        print('='*59)
+        print(table_row(phone='No entries'))
+        print('='*row_length)
 
 @input_error
 def clear_book(_, address_book: AddressBook) -> None:
     user_input = input('Do you realy want to delete all contacts? (y/N) ')
     if user_input == 'y':
         address_book.clear()
-        print('/nAddress book was successfully cleared.')
+        print('\nAddress book was successfully cleared.')
 
     
 def exit_bot():

@@ -36,6 +36,8 @@ def input_error(func):
         except KeyError as keyerr:
             print(f'Cannot find such contact. Please check spelling and try again.')
         except ValueError as err:
+            if func.__name__ == 'show_whole_contacts_book':
+                print('Invalid argument. Expected number.')
             print(err)
         except PhoneNotFoundError:
             print('Phone was not found.')

@@ -1,30 +1,3 @@
-"""
-
-Порядок написання бота:
-    1. Створити функції обробки команд.
-        - Перевірка коректності введеного номеру.
-        - Виведення номерів в єдиному форматі
-        - Відображати контакти в алфавітному порядку
-    2. На основі фукцій створити декоратор обробки помилок.
-    3. Записувати контакти у файл .json та зчитувати дані з нього:
-        - зчитувати дані при запуску бота та зберігати в словник.
-        - при закінченні роботи програми словник (зі змінами чи без) перезаписувати у файл
-    4. Прописати логіку бота включаючи у функції main()
-
-    Commands:
-    - hello - Greating user
-    - add - add contact (name, phone) to the contacts dict
-    - change - change phone of existing number
-    - remove - removes contact from the contacts book
-    - phone - phone of the given contact
-    - show all - show all contacts
-    - good bye, close, exit - end bot
-    - help - output commands list with their descriptions
-
-  """
-
-
-# import json
 from pathlib import Path
 from commands_parser import commands_parser
 from handlers import *
@@ -40,6 +13,7 @@ from handlers import *
 # tolya = Record(Name('Tolya'), Phone('0933434459'))
 
 # ab = AddressBook('ab.bin')
+
 # ab.add_record(max)
 # ab.add_record(valera)
 # ab.add_record(vlad)

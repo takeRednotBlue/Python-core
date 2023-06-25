@@ -52,8 +52,10 @@ def remove_contact(args: list, address_book: AddressBook) -> None:
         address_book[name].remove_phone(phone)
         print(f'Phone number \'{phone}\' was successfully removed.')
     else:
-        address_book.remove_record(name)
-        print(f'Contact \'{name}\' was successfully removed.')
+        user_input = input(f'Do you realy want to delete contact \'{name}\'? (y/N) ')
+        if user_input == 'y':
+            address_book.remove_record(name)
+            print(f'Contact \'{name}\' was successfully removed.')
     
     
 @input_error
@@ -130,14 +132,14 @@ or data coruption. Don't terminate bot with CTRL+C combination because all unsav
 
 Available commands:
     - hello                                 Greet user
-    - add <name> <phone>                    Add a new contact
-    - birthday <date>(opt)                  Shows how many days to birthday or set birthday date 
+    - add <name> <phone> <birthday>(opt)    Add new contact wirh number and birhtday(optional)
+    - birthday <date>(opt)                  Shows how many days to birthday left or set birthday date 
     - change <name> <phone> <new_phone>     Change the phone number of an existing contact
-    - remove <name> <phone>(opt)            Remove contact or phone number if phone was given
-    - phone <name>                          Get the phone numbers
-    - find <search_string>                  Display contacts which contain passed string
+    - remove <name> <phone>(opt)            Remove contact or phone number
+    - phone <name>                          Get contact's phone numbers
+    - find <search_string>                  Display contacts which contain search string (phone, name)
     - show all                              Display whole contacts book
-    - clear                                 Delete all contacts and empty address book
+    - clear                                 Empty address book
     - help                                  Show this help message
     - good bye, close, exit                 End the bot
     """

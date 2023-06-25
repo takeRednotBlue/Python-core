@@ -1,20 +1,3 @@
-"""
-Завдання
-
-У цьому домашньому завданні вам потрібно:
-
-    Додати функціонал збереження адресної книги на диск та відновлення з диска. Для цього ви можете вибрати будь-який зручний для вас протокол 
-    серіалізації/десеріалізації даних та реалізувати методи, які дозволять зберегти всі дані у файл і завантажити їх із файлу.
-
-    Додати користувачеві можливість пошуку за вмістом книги контактів, щоб можна було знайти всю інформацію про одного або кількох користувачів 
-    за кількома цифрами номера телефону або літерами імені тощо.
-
-Критерії приймання:
-
-    Застосунок не втрачає дані після виходу із застосунку та відновлює їх з файлу.
-    Застосунок виводить список користувачів, у яких в імені або номері телефону є збіги із введеним рядком.
-"""
-
 from collections import UserDict
 from datetime import datetime
 import pickle
@@ -195,12 +178,9 @@ class Birthday(Field):
     
     @Field.value.setter
     def value(self, date):
-        try:
-            format = self.format_mapper(date)
-            birthday = datetime.strptime(date, format).date()
-        except:
-            raise ValueError('Invalid date format.')
-        
+        format = self.format_mapper(date)
+        birthday = datetime.strptime(date, format).date()
+               
         approx_age = datetime.now().year - birthday.year
         if 0 <= approx_age <= 120:
             self._value = birthday

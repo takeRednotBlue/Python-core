@@ -1,45 +1,25 @@
-import re
-from datetime import datetime
+import openai
 
+# Set up your OpenAI API key
+openai.api_key = "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"
 
+# Define a conversation with the model
+conversation = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Who won the world series in 2020?"},
+    {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+    {"role": "user", "content": "Where was it played?"}
+]
 
+# Send the conversation to the model
+response = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=conversation
+)
 
-def date_transformation(date: str):
+# Get the model's reply
+reply = response['choices'][0]['message']['content']
+print("Model:", reply)
 
-        date_mapping = {
-                r'\d{2}\.\d{2}\.\d{4}': '%d.%m.%Y',
-                r'\d{2}/\d{2}/\d{4}': '%d/%m/%Y',
-                r'\d{2}\.\d{2}\.\d{2}': '%d.%m.%y',
-                r'\d{2}/\d{2}/\d{2}': '%d/%m/%y',
-                r'\d{4}-\d{2}-\d{2}': '%Y-%m-%d',
-        }
-
-        for pattern, format in date_mapping.items():
-            if re.match(pattern, date):
-                birthday = datetime.strptime(date, format)
-                return birthday
-        else:
-             raise ValueError('Invalid data format.')
-"""12.03.2023
-    12.03.20
-    12-03-2023
-    2023-03-12
-    12/03/2023
-    
-    """
-
-test1 = date_transformation('12.03.2023')
-test2 = date_transformation('12/14/2023')
-test3 = date_transformation('12.03.23')
-test4 = date_transformation('12/03/23')
-test5 = date_transformation('2023-03-12')
-
-assert type(test1) == datetime
-assert type(test2) == datetime
-assert type(test3) == datetime
-assert type(test4) == datetime
-assert type(test5) == datetime
-
-
-print('Everything is OK!')
-
+"""
+"""
